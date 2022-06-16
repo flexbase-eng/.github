@@ -13,7 +13,7 @@ env:
   SONAR_ORG: flexbase
   SONAR_PROJECT_KEY: ${{ inputs.project_key }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  SONAR_TOKEN: test
+  SONAR_TOKEN_1: test
 
 jobs:
   build:
@@ -34,3 +34,4 @@ jobs:
           -Dsonar.organization=${{ env.SONAR_ORG }}
           -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
           -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+          -D
