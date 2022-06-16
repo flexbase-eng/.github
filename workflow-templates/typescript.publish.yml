@@ -5,6 +5,9 @@ on:
       project_key:
         required: true
         type: string
+      tag:
+        required: false
+        type: string
   pull_request:
   push:
     branches: [ $default-branch ]
@@ -29,4 +32,10 @@ jobs:
       uses: actions/setup-node@v3
       with:
         registry-url: 'https://registry.npmjs.org'
-      run: yarn publish
+      run: |
+        if [ -z "${{ inputs.tag }}"]
+        then
+          yarn publish
+        else
+          yarn publish --tag ${{ inputs.tag }}
+        fi
