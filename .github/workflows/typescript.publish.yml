@@ -19,10 +19,12 @@ jobs:
       with:
         name: dist
 
-    - name: Publish
+    - name: Setup node
       uses: actions/setup-node@v3
       with:
         registry-url: 'https://registry.npmjs.org'
+
+    - name: Publish
       run: |
         if [ -z "${{ inputs.tag }}"]
         then
