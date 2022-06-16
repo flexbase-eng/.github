@@ -29,9 +29,11 @@ jobs:
       uses: actions/setup-node@v3
       with:
         registry-url: 'https://registry.npmjs.org'
+        node-version: latest
+        cache: 'yarn'
 
     - name: Setup yarn
-      run: yarn
+      run: yarn install --frozen-lockfile
 
     - name: Publish
       run: |

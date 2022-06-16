@@ -14,6 +14,7 @@ jobs:
         fetch-depth: 0 # Disabling shallow clone is recommended for improving relevancy of reporting
     - uses: actions/setup-node@v3
       with:
+        node-version: latest
         cache: 'yarn'
 
     - name: Install
@@ -35,6 +36,7 @@ jobs:
         path: |
           dist
           package.json
+          yarn.lock
         retention-days: 1
 
     - name: Store coverage artifacts
