@@ -27,11 +27,8 @@ jobs:
 
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
-      env:
-        SONAR_TOKEN: test2
       with:
         args: >
           -Dsonar.organization=${{ env.SONAR_ORG }}
           -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
           -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
-          -D
