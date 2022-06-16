@@ -5,9 +5,15 @@ on:
       tag:
         required: false
         type: string
+    secrets:
+      NODE_AUTH_TOKEN:
+        required: true
   pull_request:
   push:
     branches: [ $default-branch ]
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
 jobs:
   npm:
@@ -23,6 +29,9 @@ jobs:
       uses: actions/setup-node@v3
       with:
         registry-url: 'https://registry.npmjs.org'
+
+    - name: Setup yarn
+      run: yarn
 
     - name: Publish
       run: |
