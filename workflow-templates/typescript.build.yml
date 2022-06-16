@@ -5,7 +5,6 @@ on:
   push:
     branches: [ $default-branch ]
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,7 +34,7 @@ jobs:
         name: dist
         path: dist
         retention-days: 1
-        
+
     - name: Store coverage artifacts
       uses: actions/upload-artifact@v3
       with:
