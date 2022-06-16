@@ -32,7 +32,9 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: dist
+        path: |
+          dist
+          package.json
         retention-days: 1
 
     - name: Store coverage artifacts
