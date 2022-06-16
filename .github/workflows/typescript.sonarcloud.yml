@@ -5,6 +5,9 @@ on:
       project_key:
         required: true
         type: string
+    secrets:
+      SONAR_TOKEN:
+        required: true
   pull_request:
   push:
     branches: [ $default-branch ]
@@ -27,8 +30,6 @@ jobs:
 
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
         args: >
           -Dsonar.organization=${{ env.SONAR_ORG }}
