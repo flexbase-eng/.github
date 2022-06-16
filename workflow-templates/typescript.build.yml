@@ -1,0 +1,44 @@
+name: Build
+on:
+  workflow_call:
+  pull_request:
+  push:
+    branches: [ $default-branch ]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # Disabling shallow clone is recommended for improving relevancy of reporting
+    - uses: actions/setup-node@v3
+      with:
+        cache: 'yarn'
+
+    - name: Install
+      run: yarn install --frozen-lockfile
+
+    - name: Build
+      run: yarn build
+
+    - name: Lint
+      run: yarn lint
+
+    - name: Test
+      run: yarn test
+
+    - name: Store build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: dist
+        retention-days: 1
+        
+    - name: Store coverage artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: code-coverage-report
+        path: coverage/lcov.info
+        retention-days: 1

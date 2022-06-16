@@ -1,1 +1,1 @@
-# .github
+# Flexbase github resources

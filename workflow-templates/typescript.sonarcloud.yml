@@ -1,0 +1,34 @@
+name: SonarCloud
+on:
+  workflow_call:
+    inputs:
+      project_key:
+        required: true
+        type: string
+  pull_request:
+  push:
+    branches: [ $default-branch ]
+
+env:
+  SONAR_ORG: flexbase
+  SONAR_PROJECT_KEY: ${{ inputs.project_key }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        
+    - name: Retrieve coverage artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: code-coverage-report
+
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      with:
+        args: >
+          -Dsonar.organization=${{env.SONAR_ORG}}
+          -Dsonar.projectKey=${{env.SONAR_PROJECT_KEY}}
+          -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info

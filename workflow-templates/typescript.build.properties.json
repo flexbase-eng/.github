@@ -1,0 +1,11 @@
+{
+    "name": "Typescript Build",
+    "description": "Flexbase ts/js build workflow",
+    "iconName": "typescript.build",
+    "categories": [
+        "TypeScript", "JavaScript"
+    ],
+    "filePatterns": [
+        "package.json$"
+    ]
+}

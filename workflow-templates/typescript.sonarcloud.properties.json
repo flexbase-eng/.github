@@ -1,0 +1,11 @@
+{
+    "name": "Typescript SonarCloud",
+    "description": "Flexbase ts/js sonarcloud workflow",
+    "iconName": "typescript.sonarcloud",
+    "categories": [
+        "TypeScript", "JavaScript"
+    ],
+    "filePatterns": [
+        "package.json$"
+    ]
+}
