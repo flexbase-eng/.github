@@ -1,6 +1,10 @@
 name: Build
 on:
   workflow_call:
+    inputs:
+      package_folder:
+        required: true
+        type: string
   pull_request:
   push:
     branches: [ $default-branch ]
@@ -29,15 +33,14 @@ jobs:
     - name: Test
       run: yarn test
 
+    - name: Pack
+      run: yarn pack
+
     - name: Store build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: |
-          dist
-          LICENSE
-          readme.md
-          yarn.lock
+        path: ${{ inputs.package_folder }}
         retention-days: 1
 
     - name: Store coverage artifacts
