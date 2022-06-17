@@ -40,7 +40,7 @@ jobs:
       run: |
         if [ -z "${{ inputs.tag }}" ]
         then
-          yarn publish
+          yarn publish --access public
         else
-          yarn publish --tag ${{ inputs.tag }}
+          yarn publish --access public --tag ${{ inputs.tag }}
         fi
