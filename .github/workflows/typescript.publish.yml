@@ -37,7 +37,7 @@ jobs:
 
     - name: Publish
       run: |
-        if [ -z "${{ inputs.tag }}"]
+        if [ -z "${{ inputs.tag }}" ]
         then
           yarn publish
         else
