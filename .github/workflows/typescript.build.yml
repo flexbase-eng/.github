@@ -34,8 +34,8 @@ jobs:
     - name: Test
       run: yarn test
 
-    - name: Pack
-      run: yarn pack
+    - name: Package
+      run: yarn package
 
     - name: Store build artifacts
       uses: actions/upload-artifact@v3
