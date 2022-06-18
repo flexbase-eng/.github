@@ -5,6 +5,7 @@ on:
       tag:
         required: false
         type: string
+        default: latest
     secrets:
       NODE_AUTH_TOKEN:
         required: true
