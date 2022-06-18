@@ -6,9 +6,27 @@ on:
         required: false
         type: string
         default: 'dist'
+      use_packr:
+        required: false
+        type: boolean
+        default: true
+      major_version:
+        required: false
+        type: number
+      minor_version:
+        required: false
+        type: number
+      revision:
+        required: false
+        type: number
   pull_request:
   push:
     branches: [ $default-branch ]
+
+env:
+  PACKR_MAJOR_VERSION: ${{ inputs.major_version }}
+  PACKR_MINOR_VERSION: ${{ inputs.minor_version }}
+  PACKR_REVISION: ${{ inputs.revision }}
 
 jobs:
   yarn:
@@ -34,8 +52,21 @@ jobs:
     - name: Test
       run: yarn test
 
-    - name: Package
-      run: yarn package
+    - name: Build major version env
+      if: ${{ env.PACKR_MAJOR_VERSION != ''}}
+      run: echo 'PACKR_MAJOR_VERSION=--major $PACKR_MAJOR_VERSION' >> $GITHUB_ENV
+
+    - name: Build minor version env
+      if: ${{ env.PACKR_MINOR_VERSION != ''}}
+      run: echo 'PACKR_MINOR_VERSION=--major $PACKR_MINOR_VERSION' >> $GITHUB_ENV
+
+    - name: Build revision env
+      if: ${{ env.PACKR_REVISION != ''}}
+      run: echo 'PACKR_REVISION=--major $PACKR_REVISION' >> $GITHUB_ENV
+
+    - name: Packr
+      if: ${{ inputs.use_packr == true }}
+      run: yarn packr ${{ env.PACKR_MAJOR_VERSION }} ${{ env.PACKR_MINOR_VERSION }} ${{ env.PACKR_REVISION }}
 
     - name: Store build artifacts
       uses: actions/upload-artifact@v3
