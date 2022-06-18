@@ -12,13 +12,10 @@ on:
         default: true
       major_version:
         required: false
-        type: number
       minor_version:
         required: false
-        type: number
       revision:
         required: false
-        type: number
   pull_request:
   push:
     branches: [ $default-branch ]
