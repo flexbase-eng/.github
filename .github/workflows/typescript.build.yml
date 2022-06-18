@@ -54,15 +54,15 @@ jobs:
 
     - name: Build major version env
       if: ${{ env.PACKR_MAJOR_VERSION != ''}}
-      run: echo 'PACKR_MAJOR_VERSION=--major $PACKR_MAJOR_VERSION' >> $GITHUB_ENV
+      run: echo '::set-env name=PACKR_MAJOR_VERSION::--major $PACKR_MAJOR_VERSION'
 
     - name: Build minor version env
       if: ${{ env.PACKR_MINOR_VERSION != ''}}
-      run: echo 'PACKR_MINOR_VERSION=--major $PACKR_MINOR_VERSION' >> $GITHUB_ENV
+      run: echo '::set-env name=PACKR_MINOR_VERSION::--minor $PACKR_MINOR_VERSION'
 
     - name: Build revision env
       if: ${{ env.PACKR_REVISION != ''}}
-      run: echo 'PACKR_REVISION=--major $PACKR_REVISION' >> $GITHUB_ENV
+      run: echo '::set-env name=PACKR_REVISION::--revision $PACKR_REVISION'
 
     - name: Packr
       if: ${{ inputs.use_packr == true }}
