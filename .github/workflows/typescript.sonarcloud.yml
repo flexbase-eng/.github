@@ -20,6 +20,7 @@ env:
 
 jobs:
   sonarcloud:
+    name: Sonarcloud Analysis
     runs-on: ubuntu-latest
     steps:
         

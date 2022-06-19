@@ -18,6 +18,7 @@ env:
 
 jobs:
   npm:
+    name: Publish to npm
     runs-on: ubuntu-latest
     steps:
         
