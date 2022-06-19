@@ -9,8 +9,6 @@
 
 ## <a id="workflows"></a> Workflows
 
----
-
 ### <a id="typescript.build"></a> typescript.build
 
 Builds typescript using [yarn](https://yarnpkg.com/)
