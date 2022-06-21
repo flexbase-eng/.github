@@ -9,7 +9,6 @@ on:
     secrets:
       NODE_AUTH_TOKEN:
         required: true
-  pull_request:
   push:
     branches: [ $default-branch ]
 

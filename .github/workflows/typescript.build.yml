@@ -29,6 +29,16 @@ env:
   PACKR_REVISION: 
 
 jobs:
+  pr-labeler:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: TimonVS/pr-labeler-action@v3
+        with:
+          configuration-path: .github/pr-labeler.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   yarn:
     name: Build/Lint/Test/Packr
     runs-on: ubuntu-latest
