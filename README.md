@@ -57,9 +57,8 @@ Pushes coverage to [sonarcloud](https://sonarcloud.io/)
     needs: build
     uses: flexbase-eng/.github/.github/workflows/typescript.sonarcloud.yml@main
     with:
-      project_key: flexbase-eng_http-client-middleware
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      project_key: flexbase-eng_<repo-name>
+    secrets: inherit
 ```
 
 #### Inputs
