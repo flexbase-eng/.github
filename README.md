@@ -66,7 +66,6 @@ Pushes coverage to [sonarcloud](https://sonarcloud.io/)
 Input | Type | Default | Required
 --- | --- | --- | ---
 project_key | `string` |  | *
-SONAR_TOKEN | github secret |  | *
 
 #### Steps
 

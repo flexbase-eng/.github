@@ -34,10 +34,6 @@ jobs:
         name: code-coverage-report
         path: coverage
       
-    - name: Display structure of downloaded files
-      run: ls -R
-      working-directory: coverage
-
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       with:
