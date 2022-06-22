@@ -9,8 +9,6 @@ on:
     secrets:
       NODE_AUTH_TOKEN:
         required: true
-  push:
-    branches: [ $default-branch ]
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}

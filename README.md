@@ -66,7 +66,6 @@ Pushes coverage to [sonarcloud](https://sonarcloud.io/)
 Input | Type | Default | Required
 --- | --- | --- | ---
 project_key | `string` |  | *
-SONAR_TOKEN | github secret |  | *
 
 #### Steps
 
@@ -86,8 +85,7 @@ Pushes node package to [npm](https://www.npmjs.com/) under the `@flexbase` scope
     uses: flexbase-eng/.github/.github/workflows/typescript.publish.yml@main
     with:
       tag: beta
-    secrets:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
+    secrets: inherit
 ```
 
 #### Inputs
@@ -95,7 +93,6 @@ Pushes node package to [npm](https://www.npmjs.com/) under the `@flexbase` scope
 Input | Type | Default | Required
 --- | --- | --- | ---
 tag | `string` | latest | 
-NODE_AUTH_TOKEN | github secret |  | *
 
 #### Steps
 

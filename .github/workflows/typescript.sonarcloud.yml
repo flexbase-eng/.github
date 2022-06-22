@@ -8,9 +8,6 @@ on:
     secrets:
       SONAR_TOKEN:
         required: true
-  pull_request:
-  push:
-    branches: [ $default-branch ]
 
 env:
   SONAR_ORG: flexbase
@@ -34,10 +31,6 @@ jobs:
         name: code-coverage-report
         path: coverage
       
-    - name: Display structure of downloaded files
-      run: ls -R
-      working-directory: coverage
-
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       with:
