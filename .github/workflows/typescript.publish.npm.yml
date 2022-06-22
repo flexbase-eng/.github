@@ -7,13 +7,11 @@ on:
         type: string
         default: latest
     secrets:
-      NODE_AUTH_TOKEN:
+      NPM_TOKEN:
         required: true
-  push:
-    branches: [ $default-branch ]
 
 env:
-  NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 jobs:
   npm:

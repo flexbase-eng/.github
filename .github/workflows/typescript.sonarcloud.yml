@@ -8,9 +8,6 @@ on:
     secrets:
       SONAR_TOKEN:
         required: true
-  pull_request:
-  push:
-    branches: [ $default-branch ]
 
 env:
   SONAR_ORG: flexbase
