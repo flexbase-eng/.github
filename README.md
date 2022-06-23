@@ -27,8 +27,8 @@ jobs:
 
 Input | Type | Default | Required
 --- | --- | --- | ---
-package_folder | `string` | dist | no
-use_packr | `boolean` |  | no
+package_folder | `string` |  | no
+use_packr | `boolean` | false | no
 major_version[^1] | `integer` |  | no
 minor_version[^1]  | `integer` |  | no
 revision[^1]  | `integer` |  | no
