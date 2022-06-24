@@ -27,11 +27,11 @@ jobs:
 
 Input | Type | Default | Required
 --- | --- | --- | ---
-package_folder | `string` | dist | 
-use_packr | `boolean` | true | 
-major_version[^1] | `integer` |  |
-minor_version[^1]  | `integer` |  |
-revision[^1]  | `integer` |  |
+package_folder | `string` |  | no
+use_packr | `boolean` | false | no
+major_version[^1] | `integer` |  | no
+minor_version[^1]  | `integer` |  | no
+revision[^1]  | `integer` |  | no
 
 [^1]: Packr must be used for version support
 

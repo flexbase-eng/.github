@@ -5,7 +5,6 @@ on:
       package_folder:
         required: false
         type: string
-        default: 'dist'
       use_packr:
         required: false
         type: boolean
@@ -77,6 +76,7 @@ jobs:
       run: yarn packr ${{ env.PACKR_MAJOR_VERSION }} ${{ env.PACKR_MINOR_VERSION }} ${{ env.PACKR_REVISION }}
 
     - name: Store build artifacts
+      if: ${{ inputs.package_folder != ''}}
       uses: actions/upload-artifact@v3
       with:
         name: dist
