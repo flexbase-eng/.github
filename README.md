@@ -173,4 +173,4 @@ Input | Type | Default | Required
 
 #### References
 - learn more about github release management here: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
-- 
+- Release drafter github action: https://github.com/release-drafter/release-drafter
