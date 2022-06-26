@@ -4,7 +4,8 @@
   * [typescript.build](#typescript.build)
   * [typescript.sonarcloud](#typescript.sonarcloud)
   * [typescript.publish.npm](#typescript.publish.npm)
-  * [typescript.release.notifier](#typescript.release.notifier)
+  * [release.notifier](#release.notifier)
+  * [release.drafter](#release.drafter)
 
 ---
 
@@ -101,18 +102,27 @@ tag | `string` | latest |
 2. Setup yarn
 3. Publish to npm
 
-### <a id="typescript.release.notifier"></a> typescript.release.notifier
+### <a id="release.notifier"></a> release.notifier
 Workflow to utilize a common pattern for release notifications when publishing a release via github.  Notifier aggregates the release notes and pushes this to a release channel. `gha_deployment_failure_url` defines the URL you would like to set for log review of the production deployment failure.
 
 #### Usage
 ```
   prod-notify:
     needs: <production deploy worfklow name>
-    uses: flexbase-eng/.github/.github/workflows/typescript.release.notifier.yml@main
+    uses: flexbase-eng/.github/.github/workflows/release.notifier.yml@main
     with:
       gha_deployment_failure_url: https://github.com/flexbase-eng/flexbase-web/actions/workflows/deploy-prod.yml
       production_url: https://www.flexbase.app
       release_title: Flexbase Web
+    secrets: inherit
+```
+or minimally: 
+```
+  prod-notify:
+    needs: <production deploy worfklow name>
+    uses: flexbase-eng/.github/.github/workflows/release.notifier.yml@main
+    with:
+      gha_deployment_failure_url: https://github.com/flexbase-eng/flexbase-web/actions/workflows/deploy-prod.yml
     secrets: inherit
 ```
 
@@ -131,3 +141,36 @@ Assumptions: production deployment triggered based on published release notes.  
 1. Get the repositories latest published release
 2. if success, post slack notification to release channel
 3. if failure, post slack notificaiton to release channel with the `gha_deployment_failure_url` to help developers identify root cause.
+
+### <a id="release.drafter"></a> release.drafter
+Drafts merged PR's into a github release draft format, aggregating labels to various sections.
+
+#### Usage
+Entire worfklow for reference to add to individual repository.
+```
+  name: Release draft workflow
+  on:
+    push:
+      branches:
+        - main
+    # pull_request event is required only for autolabeler
+    pull_request:
+      # Only following types are handled by the action, but one can default to all as well
+      types: [opened, reopened, synchronize]
+  update_release_draft:
+    uses: flexbase-eng/.github/.github/workflows/release.drafter.yml@main
+    secrets: inherit
+```
+
+#### Inputs
+
+Input | Type | Default | Required
+--- | --- | --- | ---
+
+#### Steps
+
+1. on merge to `main`, updates Release draft
+
+#### References
+- learn more about github release management here: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
+- 

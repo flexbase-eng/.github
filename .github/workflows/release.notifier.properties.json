@@ -1,0 +1,11 @@
+{
+    "name": "Release Notification",
+    "description": "Flexbase release notification workflow for slack channel",
+    "iconName": "release.notifier",
+    "categories": [
+        "Release", "Deployment"
+    ],
+    "filePatterns": [
+        "package.json$"
+    ]
+}
