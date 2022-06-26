@@ -1,0 +1,11 @@
+{
+    "name": "Typescript Release Notification",
+    "description": "Flexbase ts/js release notifications in slack channel",
+    "iconName": "typescript.publish",
+    "categories": [
+        "TypeScript", "JavaScript"
+    ],
+    "filePatterns": [
+        "package.json$"
+    ]
+}

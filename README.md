@@ -4,6 +4,7 @@
   * [typescript.build](#typescript.build)
   * [typescript.sonarcloud](#typescript.sonarcloud)
   * [typescript.publish.npm](#typescript.publish.npm)
+  * [typescript.release.notifier](#typescript.release.notifier)
 
 ---
 
@@ -99,3 +100,30 @@ tag | `string` | latest |
 1. Retreive build artifacts
 2. Setup yarn
 3. Publish to npm
+
+### <a id="typescript.release.notifier"></a> typescript.release.notifier
+Workflow to utilize a common pattern for release notifications when publishing a release via github.  Notifier aggregates the release notes and pushes this to a release channel. `gha_deployment_failure_url` defines the URL you would like to set for log review of the production deployment failure.
+
+#### Usage
+```
+  prod-notify:
+    needs: <production deploy worfklow name>
+    uses: flexbase-eng/.github/.github/workflows/typescript.release.notifier.yml@main
+    with:
+      gha_deployment_failure_url: https://github.com/flexbase-eng/flexbase-web/actions/workflows/deploy-prod.yml
+    secrets: inherit
+```
+
+#### Inputs
+
+Input | Type | Default | Required
+--- | --- | --- | ---
+gha_deployment_failure_url | `string` | none | yes
+
+#### Steps
+
+Assumptions: production deployment triggered based on published release notes.  Deployment has completed (either succeeded or failed). 
+
+1. Get the repositories latest published release
+2. if success, post slack notification to release channel
+3. if failure, post slack notificaiton to release channel with the `gha_deployment_failure_url` to help developers identify root cause.
