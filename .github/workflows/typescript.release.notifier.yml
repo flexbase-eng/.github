@@ -5,12 +5,21 @@ on:
       gha_deployment_failure_url:
         required: true
         type: string
+      production_url:
+        required: false
+        type: string
+        default: https://www.flexbase.app
+      release_title:
+        required: false
+        type: string
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
   FAILURE_URL: inputs.gha_deployment_failure_url
+  PRODUCTION_URL: inputs.production_url
+  RELEASE_TITLE: ${{ inputs.release_title }} || ${{ github.event.repository.name }}
 
 permissions:
   contents: read
@@ -46,7 +55,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "Flexbase Web Release ${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }}"
+                    "text": "${{ env.RELEASE_TITLE }} Release ${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }}"
                   }
                 },
                 {
@@ -56,7 +65,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Production URL*: <https://www.flexbase.app>"
+                    "text": "*Production URL*: <${{env.PRODUCTION_URL}}>"
                   }
                 },
                 {

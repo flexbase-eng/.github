@@ -111,6 +111,8 @@ Workflow to utilize a common pattern for release notifications when publishing a
     uses: flexbase-eng/.github/.github/workflows/typescript.release.notifier.yml@main
     with:
       gha_deployment_failure_url: https://github.com/flexbase-eng/flexbase-web/actions/workflows/deploy-prod.yml
+      production_url: https://www.flexbase.app
+      release_title: Flexbase Web
     secrets: inherit
 ```
 
@@ -119,6 +121,8 @@ Workflow to utilize a common pattern for release notifications when publishing a
 Input | Type | Default | Required
 --- | --- | --- | ---
 gha_deployment_failure_url | `string` | none | yes
+production_url | `string` | https://www.flexbase.app | no
+release_title | `string` | repository.name | no
 
 #### Steps
 
