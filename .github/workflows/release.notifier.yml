@@ -1,0 +1,121 @@
+name: Production Release Slack Notification
+on:
+  workflow_call:
+    inputs:
+      gha_deployment_failure_url:
+        required: true
+        type: string
+      production_url:
+        required: false
+        type: string
+        default: https://www.flexbase.app
+      release_title:
+        required: false
+        type: string
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+  FAILURE_URL: inputs.gha_deployment_failure_url
+  PRODUCTION_URL: inputs.production_url
+  RELEASE_TITLE: ${{ inputs.release_title }} || ${{ github.event.repository.name }}
+
+permissions:
+  contents: read
+
+jobs:  
+  prod-notify:
+  needs: [prod-notify-success, prod-notify-failure]
+  if: ${{ always() }}
+  steps:
+    - name: complete notificaiton run
+      run: echo "Completed prod notification"
+
+  prod-notify-success:
+    runs-on: ubuntu-18.04
+    if: ${{ success() }}
+    steps:
+      - name: Get Latest Release List
+        uses: octokit/request-action@v2.x
+        id: get_latest_release
+        with:
+          route: GET /repos/{owner}/{repo}/releases/latest
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }}
+      - name: Post Success to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.19.0
+        with:
+          payload: |
+            {
+              "text": "${{ github.event.repository.name }} has been shipped to production. Release notes are located below! :rocket:",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "${{ env.RELEASE_TITLE }} Release ${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }}"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Production URL*: <${{env.PRODUCTION_URL}}>"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Github Release Page*: <${{ fromJSON(steps.get_latest_release.outputs.data).html_url }}|${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }}>"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ${{ toJSON(fromJSON(steps.get_latest_release.outputs.data).body) }}
+                  }
+                },
+                {
+                  "type": "divider"
+                }
+              ]
+            }
+  
+  prod-notify-failure:
+    runs-on: ubuntu-18.04
+    if: ${{ failure() }}
+    steps:
+      - name: Post Failure to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.19.0
+        with:
+          payload: |
+            {
+              "text": "There was an issue shipping ${{ github.event.repository.name }} to production.",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Deployment Failure for Flexbase Web Release"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": <${{ env.FAILURE_URL }}|production deployment logs>"
+                  }
+                }
+              ]
+            }
