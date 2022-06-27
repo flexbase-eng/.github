@@ -106,7 +106,13 @@ tag | `string` | latest |
 Workflow to utilize a common pattern for release notifications when publishing a release via github.  Notifier aggregates the release notes and pushes this to a release channel. `gha_deployment_failure_url` defines the URL you would like to set for log review of the production deployment failure.
 
 #### Usage
+Entire workflow for reference to add to indidivual repository.
 ```
+  name: Notify Slack Release Channel
+    on:
+    release:
+      types: [released]
+    workflow_dispatch:
   prod-notify:
     needs: <production deploy worfklow name>
     uses: flexbase-eng/.github/.github/workflows/release.notifier.yml@main
@@ -118,6 +124,11 @@ Workflow to utilize a common pattern for release notifications when publishing a
 ```
 or minimally: 
 ```
+  name: Notify Slack Release Channel
+    on:
+    release:
+      types: [released]
+    workflow_dispatch:
   prod-notify:
     needs: <production deploy worfklow name>
     uses: flexbase-eng/.github/.github/workflows/release.notifier.yml@main
