@@ -26,11 +26,11 @@ permissions:
 
 jobs:  
   prod-notify:
-  needs: [prod-notify-success, prod-notify-failure]
-  if: ${{ always() }}
-  steps:
-    - name: complete notificaiton run
-      run: echo "Completed prod notification"
+    needs: [prod-notify-success, prod-notify-failure]
+    if: ${{ always() }}
+    steps:
+      - name: complete notificaiton run
+        run: echo "Completed prod notification"
 
   prod-notify-success:
     runs-on: ubuntu-18.04
