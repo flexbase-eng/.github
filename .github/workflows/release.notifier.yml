@@ -38,7 +38,7 @@ jobs:
           repo: ${{ github.event.repository.name }}
       - name: Post Success to a Slack channel
         if: ${{ success() }}
-        id: slack
+        id: slack-success
         uses: slackapi/slack-github-action@v1.19.0
         with:
           payload: |
@@ -83,7 +83,7 @@ jobs:
             }
       - name: Post Failure to a Slack channel
         if: ${{ failure() }}
-        id: slack
+        id: slack-failure
         uses: slackapi/slack-github-action@v1.19.0
         with:
           payload: |
