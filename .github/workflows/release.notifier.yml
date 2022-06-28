@@ -83,11 +83,7 @@ jobs:
             }
       - name: Post Failure to a Slack channel
         if: ${{ failure() }}
-<<<<<<< HEAD
         id: slack-failure
-=======
-        id: slack
->>>>>>> main
         uses: slackapi/slack-github-action@v1.19.0
         with:
           payload: |
