@@ -17,9 +17,9 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-  FAILURE_URL: inputs.gha_deployment_failure_url
-  PRODUCTION_URL: inputs.production_url
-  RELEASE_TITLE: ${{ inputs.release_title }} || ${{ github.event.repository.name }}
+  FAILURE_URL: ${{ inputs.gha_deployment_failure_url }}
+  PRODUCTION_URL: ${{ inputs.production_url }}
+  RELEASE_TITLE: ${{ inputs.release_title || github.event.repository.name }}
 
 permissions:
   contents: read
