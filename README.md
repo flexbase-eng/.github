@@ -94,7 +94,10 @@ Pushes node package to [npm](https://www.npmjs.com/) under the `@flexbase` scope
 
 Input | Type | Default | Required
 --- | --- | --- | ---
-tag | `string` | latest | 
+tag | `string` | latest | no
+build_artifact | `string` | latest | no
+package_manager | `string` | yarn | no
+package_visibility | `string` | public | no
 
 #### Steps
 
