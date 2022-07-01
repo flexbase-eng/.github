@@ -56,7 +56,7 @@ jobs:
         node-version: latest
         cache: 'yarn'
 
-     - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v3
       if: steps.check_files.outputs.files_exists == 'false'
       with:
         node-version: latest
