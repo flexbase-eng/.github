@@ -45,6 +45,7 @@ jobs:
         fetch-depth: 0 # Disabling shallow clone is recommended for improving relevancy of reporting
     
     - name: "Check file existence for yarn"
+      id: check_files
       uses: andstor/file-existence-action@v1
       with:
         files: "yarn-lock.json"
