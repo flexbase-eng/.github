@@ -9,7 +9,7 @@ on:
       build_artifact:
         required: false
         type: string
-        default: build
+        default: dist
       package_manager:
         required: false
         type: string
