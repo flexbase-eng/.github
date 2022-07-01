@@ -6,6 +6,18 @@ on:
         required: false
         type: string
         default: latest
+      build_artifact:
+        required: false
+        type: string
+        default: build
+      package_manager:
+        required: false
+        type: string
+        default: yarn
+      package_visibility:
+        required: false
+        type: string
+        default: public
     secrets:
       NODE_AUTH_TOKEN:
         required: true
@@ -22,9 +34,10 @@ jobs:
     - name: Retrieve build artifacts
       uses: actions/download-artifact@v3
       with:
-        name: dist
+        name: ${{ inputs.build_artifact }}
 
-    - name: Setup node
+    - name: Setup node with yarn cache
+      if: inputs.package_manager == 'yarn'
       uses: actions/setup-node@v3
       with:
         registry-url: 'https://registry.npmjs.org'
@@ -33,7 +46,17 @@ jobs:
         cache: 'yarn'
 
     - name: Setup yarn
+      if: inputs.package_manager == 'yarn'
       run: yarn install --frozen-lockfile
 
-    - name: Publish
-      run: yarn publish --access public --tag ${{ inputs.tag }}
+    - name: Publish with yarn command
+      if: inputs.package_manager == 'yarn'
+      run: yarn publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}
+
+    - name: Setup npm
+      if: inputs.package_manager == 'npm'
+      run: npm ci
+
+    - name: Publish with npm command
+      if: inputs.package_manager == 'npm'
+      run: npm publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}
