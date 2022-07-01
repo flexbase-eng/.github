@@ -96,15 +96,15 @@ jobs:
 
     - name: Build npm
       if: steps.check_files.outputs.files_exists == 'false'
-      run: npm build
+      run: npm run build
 
     - name: Lint npm
       if: steps.check_files.outputs.files_exists == 'false'
-      run: npm lint
+      run: npm run lint
 
     - name: Test npm
       if: steps.check_files.outputs.files_exists == 'false'
-      run: npm test    
+      run: npm run test    
 
     - name: Packr
       if: ${{ inputs.use_packr == true }}
