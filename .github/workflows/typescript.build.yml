@@ -18,6 +18,10 @@ on:
       revision:
         required: false
         type: string
+      package_manager:
+        required: false
+        type: string
+        default: 'yarn'
 
 env:
   PACKR_MAJOR_VERSION: 
@@ -36,32 +40,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-lint-test-packr:
-    name: Build/Lint/Test/Packr
+  packr-versions:
+    name: Packr version modifier
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # Disabling shallow clone is recommended for improving relevancy of reporting
-    
-    - name: "Check file existence for yarn"
-      id: check_files
-      uses: andstor/file-existence-action@v1
-      with:
-        files: "yarn.lock"
-      
-    - uses: actions/setup-node@v3
-      if: steps.check_files.outputs.files_exists == 'true'
-      with:
-        node-version: latest
-        cache: 'yarn'
-
-    - uses: actions/setup-node@v3
-      if: steps.check_files.outputs.files_exists == 'false'
-      with:
-        node-version: latest
-        cache: 'npm'
-
     - name: Build major version env
       if: ${{ inputs.major_version != ''}}
       run: echo 'PACKR_MAJOR_VERSION=--major ${{ inputs.major_version }}' >> $GITHUB_ENV
@@ -74,42 +56,71 @@ jobs:
       if: ${{ inputs.revision != ''}}
       run: echo 'PACKR_REVISION=--revision ${{ inputs.revision }}' >> $GITHUB_ENV
 
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # Disabling shallow clone is recommended for improving relevancy of reporting
+    - uses: actions/setup-node@v3
+      with:
+        node-version: latest
+        cache: ${{ inputs.package_manager }}
+
+  yarn:
+    if: inputs.package_manager == 'yarn'
+    name: Build/Lint/Test/Packr
+    needs: [packr-versions, setup]
+    runs-on: ubuntu-latest
+    steps:
     - name: Install yarn
-      if: steps.check_files.outputs.files_exists == 'true'
       run: yarn install --frozen-lockfile
 
     - name: Build yarn
-      if: steps.check_files.outputs.files_exists == 'true'
       run: yarn build
 
     - name: Lint yarn
-      if: steps.check_files.outputs.files_exists == 'true'
       run: yarn lint
 
     - name: Test yarn
-      if: steps.check_files.outputs.files_exists == 'true'
       run: yarn test   
-
-    - name: Install npm
-      if: steps.check_files.outputs.files_exists == 'false'
-      run: npm install --ci
-
-    - name: Build npm
-      if: steps.check_files.outputs.files_exists == 'false'
-      run: npm run build
-
-    - name: Lint npm
-      if: steps.check_files.outputs.files_exists == 'false'
-      run: npm run lint
-
-    - name: Test npm
-      if: steps.check_files.outputs.files_exists == 'false'
-      run: npm run test    
 
     - name: Packr
       if: ${{ inputs.use_packr == true }}
       run: yarn packr ${{ env.PACKR_MAJOR_VERSION }} ${{ env.PACKR_MINOR_VERSION }} ${{ env.PACKR_REVISION }}
 
+  npm:
+    if: inputs.package_manager == 'npm'
+    name: Build/Lint/Test/Packr
+    needs: [packr-versions, setup]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install npm
+      run: npm install --ci
+
+    - name: Build npm
+      run: npm run build
+
+    - name: Lint npm
+      run: npm run lint
+
+    - name: Test npm
+      run: npm run test    
+
+    - name: Packr
+      if: ${{ inputs.use_packr == true }}
+      run: npm run packr ${{ env.PACKR_MAJOR_VERSION }} ${{ env.PACKR_MINOR_VERSION }} ${{ env.PACKR_REVISION }}
+
+  artifacts:
+    name: Store artifacts   
+    runs-on: ubuntu-latest
+    needs: [yarn, npm]
+    if: |
+      always() &&
+      (needs.yarn.result == 'success' || needs.yarn.result == 'skipped') &&
+      (needs.npm.result == 'success' || needs.npm.result == 'skipped')
+    steps:
     - name: Store build artifacts
       if: ${{ inputs.package_folder != ''}}
       uses: actions/upload-artifact@v3
