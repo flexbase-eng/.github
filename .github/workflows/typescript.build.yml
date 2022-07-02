@@ -76,7 +76,7 @@ jobs:
     
     - name: Create cli install command npm
       if: inputs.package_manager == 'npm'
-      run: echo "CLI_INSTALL=npm run --ci" >> $GITHUB_ENV
+      run: echo "CLI_INSTALL=npm ci" >> $GITHUB_ENV
     
     - name: Create cli build command yarn
       if: inputs.package_manager == 'yarn'
