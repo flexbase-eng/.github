@@ -43,15 +43,17 @@ jobs:
         always-auth: true
         node-version: latest
         cache: {{ inputs.package_manager }}
+    
+    - name: install jq
+      run: apt-get install jq
 
     - name: check if beta and update package.json
       if: inputs.tag == 'beta'
       run: echo "VERSION=${{jq -r .version package.json}} >> $GITHUB_ENV
-
+    
     - name: set package.json for beta
       if: inputs.tag == 'beta'
       run: echo "`jq '.version="${{env.VERSION}}-beta.${{github.event.number}}"' package.json`" > package.json
-
 
     - name: Setup yarn
       if: inputs.package_manager == 'yarn'
