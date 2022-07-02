@@ -55,42 +55,45 @@ jobs:
     - name: Build revision env
       if: ${{ inputs.revision != ''}}
       run: echo 'PACKR_REVISION=--revision ${{ inputs.revision }}' >> $GITHUB_ENV
-
-  setup:
-    name: Setup
-    runs-on: ubuntu-latest
-    steps:
-    - name: Create cli install command yarn
-      if: inputs.package_manager == 'yarn'
-      run: echo "CLI_INSTALL=yarn install --frozen-lockfile" >> $GITHUB_ENV
-    - name: Create cli install command npm
-      if: inputs.package_manager == 'npm'
-      run: echo "CLI_INSTALL=npm run --ci" >> $GITHUB_ENV
-    - name: Create cli build command yarn
-      if: inputs.package_manager == 'yarn'
-      run: echo "CLI_BUILD=yarn build" >> $GITHUB_ENV
-    - name: Create cli build command npm
-      if: inputs.package_manager == 'npm'
-      run: echo "CLI_BUILD=npm run build" >> $GITHUB_ENV
-    - name: Create cli lint command yarn
-      if: inputs.package_manager == 'yarn'
-      run: echo "CLI_LINT=yarn lint" >> $GITHUB_ENV
-    - name: Create cli lint command npm
-      if: inputs.package_manager == 'npm'
-      run: echo "CLI_LINT=npm run lint" >> $GITHUB_ENV
-    
+  
   build-lint-test:
     name: Build/Lint/Test/Packr
-    needs: [packr-versions, setup]
+    needs: [packr-versions]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0 
+    
     - uses: actions/setup-node@v3
       with:
         node-version: latest
         cache: ${{ inputs.package_manager }}
+
+    - name: Create cli install command yarn
+      if: inputs.package_manager == 'yarn'
+      run: echo "CLI_INSTALL=yarn install --frozen-lockfile" >> $GITHUB_ENV
+    
+    - name: Create cli install command npm
+      if: inputs.package_manager == 'npm'
+      run: echo "CLI_INSTALL=npm run --ci" >> $GITHUB_ENV
+    
+    - name: Create cli build command yarn
+      if: inputs.package_manager == 'yarn'
+      run: echo "CLI_BUILD=yarn build" >> $GITHUB_ENV
+    
+    - name: Create cli build command npm
+      if: inputs.package_manager == 'npm'
+      run: echo "CLI_BUILD=npm run build" >> $GITHUB_ENV
+    
+    - name: Create cli lint command yarn
+      if: inputs.package_manager == 'yarn'
+      run: echo "CLI_LINT=yarn lint" >> $GITHUB_ENV
+      
+    - name: Create cli lint command npm
+      if: inputs.package_manager == 'npm'
+      run: echo "CLI_LINT=npm run lint" >> $GITHUB_ENV
+
     - name: Install dependencies
       run: ${{ env.CLI_INSTALL }}
 
