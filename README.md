@@ -90,6 +90,14 @@ Pushes node package to [npm](https://www.npmjs.com/) under the `@flexbase` scope
     secrets: inherit
 ```
 
+publishing to production: 
+```
+  publish:
+    needs: coverage
+    uses: flexbase-eng/.github/.github/workflows/typescript.publish.yml@main
+    secrets: inherit
+```
+
 #### Inputs
 
 Input | Type | Default | Required
