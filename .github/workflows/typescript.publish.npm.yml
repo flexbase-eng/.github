@@ -26,49 +26,48 @@ env:
   NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
 jobs:
-  npm:
-    name: Publish to npm
-    runs-on: ubuntu-latest
-    steps:
-        
-    - name: Retrieve build artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: ${{ inputs.build_artifact }}
+  npmjs:
+      name: Publish to npm
+      runs-on: ubuntu-latest
+      steps: 
+      - name: Retrieve build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.build_artifact }}
 
-    - name: Setup node with cache
-      uses: actions/setup-node@v3
-      with:
-        registry-url: 'https://registry.npmjs.org'
-        always-auth: true
-        node-version: latest
-        cache: {{ inputs.package_manager }}
-    
-    - name: install json if beta
-      if: inputs.tag == 'beta'
-      run: npm i -g -y json
-     
-     - name: version value from package.json
-      if: inputs.tag == 'beta'
-      run: echo "PACKAGE_VERSION=${{json -f package.json | json version}}" >> $GITHUB_ENV
+      - name: Setup node with cache
+        uses: actions/setup-node@v3
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          always-auth: true
+          node-version: latest
+          cache: {{ inputs.package_manager }}
+      
+      - name: install json if beta
+        if: inputs.tag == 'beta'
+        run: npm i -g -y json
+      
+      - name: version value from package.json
+        if: inputs.tag == 'beta'
+        run: echo "PACKAGE_VERSION=${{json -f package.json | json version}}" >> $GITHUB_ENV
 
-    - name: beta - update package.json
-      if: inputs.tag == 'beta'
-      run: json -I -f package.json -e "this.version=\"{{env.}}-beta.${{github.event.number}}}\""
-      #run: echo "`jq '.version="${{env.VERSION}}-beta.${{github.event.number}}"' package.json`" > package.json
+      - name: beta - update package.json
+        if: inputs.tag == 'beta'
+        run: json -I -f package.json -e "this.version=\"{{env.}}-beta.${{github.event.number}}}\""
+        #run: echo "`jq '.version="${{env.VERSION}}-beta.${{github.event.number}}"' package.json`" > package.json
 
-    - name: Setup yarn
-      if: inputs.package_manager == 'yarn'
-      run: yarn install --frozen-lockfile
+      - name: Setup yarn
+        if: inputs.package_manager == 'yarn'
+        run: yarn install --frozen-lockfile
 
-    - name: Publish with yarn command
-      if: inputs.package_manager == 'yarn'
-      run: yarn publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}
+      - name: Publish with yarn command
+        if: inputs.package_manager == 'yarn'
+        run: yarn publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}
 
-    - name: Setup npm
-      if: inputs.package_manager == 'npm'
-      run: npm ci
+      - name: Setup npm
+        if: inputs.package_manager == 'npm'
+        run: npm ci
 
-    - name: Publish with npm command
-      if: inputs.package_manager == 'npm'
-      run: npm publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}
+      - name: Publish with npm command
+        if: inputs.package_manager == 'npm'
+        run: npm publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}
