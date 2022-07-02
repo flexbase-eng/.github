@@ -49,11 +49,19 @@ jobs:
 
     - name: check if beta and update package.json
       if: inputs.tag == 'beta'
-      run: echo "VERSION=${{jq -r .version package.json}} >> $GITHUB_ENV
+      uses: sergeysova/jq-action@v2
+      id: version
+      with:
+        cmd: 'jq .version package.json -r'
+
+      #run: echo "VERSION=${{jq -r .version package.json}} >> $GITHUB_ENV
     
     - name: set package.json for beta
       if: inputs.tag == 'beta'
-      run: echo "`jq '.version="${{env.VERSION}}-beta.${{github.event.number}}"' package.json`" > package.json
+      uses: sergeysova/jq-action@v2
+      with:
+        cmd: 'echo "`jq '.version="${{steps.version.outputs.value}}-beta.${{github.event.number}}"' package.json`" > package.json'
+      #run: echo "`jq '.version="${{env.VERSION}}-beta.${{github.event.number}}"' package.json`" > package.json
 
     - name: Setup yarn
       if: inputs.package_manager == 'yarn'
