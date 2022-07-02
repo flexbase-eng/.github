@@ -42,19 +42,13 @@ jobs:
           always-auth: true
           node-version: latest
           cache: {{ inputs.package_manager }}
-      
-      - name: install json if beta
+            
+      - name: beta - version value from package.json
         if: inputs.tag == 'beta'
-        run: npm i -g -y json
-      
-      - name: version value from package.json
-        if: inputs.tag == 'beta'
-        run: echo "PACKAGE_VERSION=${{json -f package.json | json version}}" >> $GITHUB_ENV
-
-      - name: beta - update package.json
-        if: inputs.tag == 'beta'
-        run: json -I -f package.json -e "this.version=\"{{env.}}-beta.${{github.event.number}}}\""
-        #run: echo "`jq '.version="${{env.VERSION}}-beta.${{github.event.number}}"' package.json`" > package.json
+        run: |
+          npm i -g -y json
+          echo "PACKAGE_VERSION=${{json -f package.json | json version}}" >> $GITHUB_ENV
+          json -I -f package.json -e "this.version=\"{{env.}}-beta.${{github.event.number}}}\""
 
       - name: Setup yarn
         if: inputs.package_manager == 'yarn'
