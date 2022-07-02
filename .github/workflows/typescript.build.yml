@@ -110,11 +110,7 @@ jobs:
       if: ${{ inputs.use_packr == true }}
       run: yarn packr ${{ env.PACKR_MAJOR_VERSION }} ${{ env.PACKR_MINOR_VERSION }} ${{ env.PACKR_REVISION }}
 
-  artifacts:
-    name: Store artifacts   
-    runs-on: ubuntu-latest
-    needs: [build-lint-test]
-    steps:
+      # note - this uploads the build as dist, please note to download it will be called dist for deploy contexts
     - name: Store build artifacts
       if: ${{ inputs.package_folder != ''}}
       uses: actions/upload-artifact@v3
