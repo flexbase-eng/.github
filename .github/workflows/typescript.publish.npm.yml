@@ -46,6 +46,9 @@ jobs:
       - name: beta - version value from package.json
         if: inputs.tag == 'beta'
         run: npm i -g json
+      
+      - name: set package version
+        run: echo "PACKAGE_VERSION=${{json -f package.json | json version}}" >> $GITHUB_ENV
 
       - name: Setup yarn
         if: inputs.package_manager == 'yarn'
