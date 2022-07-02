@@ -36,14 +36,22 @@ jobs:
       with:
         name: ${{ inputs.build_artifact }}
 
-    - name: Setup node with yarn cache
-      if: inputs.package_manager == 'yarn'
+    - name: Setup node with cache
       uses: actions/setup-node@v3
       with:
         registry-url: 'https://registry.npmjs.org'
         always-auth: true
         node-version: latest
-        cache: 'yarn'
+        cache: {{ inputs.package_manager }}
+
+    - name: check if beta and update package.json
+      if: inputs.tag == 'beta'
+      run: echo "VERSION=${{jq -r .version package.json}} >> $GITHUB_ENV
+
+    - name: set package.json for beta
+      if: inputs.tag == 'beta'
+      run: echo "`jq '.version="${{env.VERSION}}-beta.${{github.event.number}}"' package.json`" > package.json
+
 
     - name: Setup yarn
       if: inputs.package_manager == 'yarn'
