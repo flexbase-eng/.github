@@ -45,7 +45,7 @@ jobs:
 
       - name: beta - version value from package.json
         if: inputs.tag == 'beta'
-        run: npm i -g json 
+        run: npm i -g json && json -f package.json
         
       - name: beta - version value from package.json
         if: inputs.tag == 'beta'
