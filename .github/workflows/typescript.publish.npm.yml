@@ -45,11 +45,11 @@ jobs:
 
       - name: beta - version value from package.json
         if: inputs.tag == 'beta'
-        run: npm i -g json && json -f package.json
+        run: npm i -g json
         
       - name: beta - version value from package.json
         if: inputs.tag == 'beta'
-        run: json -f package.json | json version
+        run: json -f package.json | json version >> $GITHUB_ENV
         # run: echo "PACKAGE_VERSION=${{ npx json -f package.json | json version }}" >> $GITHUB_ENV
 
       - name: Setup yarn
