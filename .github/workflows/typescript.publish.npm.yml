@@ -41,7 +41,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           always-auth: true
           node-version: latest
-          cache: {{ inputs.package_manager }}
+          cache: ${{ inputs.package_manager }}
 
       - name: beta - version value from package.json
         if: inputs.tag == 'beta'
