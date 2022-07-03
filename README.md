@@ -78,19 +78,23 @@ project_key | `string` |  | *
 
 ### <a id="typescript.publish.npm"></a> typescript.publish.npm
 
-Pushes node package to [npm](https://www.npmjs.com/) under the `@flexbase` scope and organization
+Pushes node package to [npm](https://www.npmjs.com/) under the `@flexbase` scope and organization.
+Takes the `package.json` value and utilizes this with the standard npm publish methodology.
+Optional `beta` tag as seen below for PR based publishes, to publish a beta version before main branch publish. This is useful if you'd like to test your changes within the package before making a formal release with merge to `main`.
 
 #### Usage
+publishing a beta on PR with the `npm` package management system: 
 ```
   publish:
     needs: coverage
     uses: flexbase-eng/.github/.github/workflows/typescript.publish.yml@main
     with:
       tag: beta
+      package_manager: npm
     secrets: inherit
 ```
 
-publishing to production: 
+publishing to production with the `yarn` package management system: 
 ```
   publish:
     needs: coverage
