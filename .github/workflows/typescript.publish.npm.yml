@@ -45,28 +45,19 @@ jobs:
 
       - name: beta - version value from package.json
         if: inputs.tag == 'beta'
-        run: npm i -g json
-        
-      - name: beta - version value from package.json
-        if: inputs.tag == 'beta'
-        run: echo "PACKAGE_VERSION=$(json -f package.json | json version)-beta.${{ github.event.number }}" >> $GITHUB_ENV
-
-      - name: run package.json update for beta
-        if: inputs.tag == 'beta'
-        run: json -I -f package.json -e "this.version=\"${{ env.PACKAGE_VERSION }}\""
+        run: |
+          npm i -g json
+          echo "PACKAGE_VERSION=$(json -f package.json | json version)-beta.${{ github.event.number }}" >> $GITHUB_ENV
+          json -I -f package.json -e "this.version=\"${{ env.PACKAGE_VERSION }}\""
  
       - name: Setup yarn
         if: inputs.package_manager == 'yarn'
-        run: yarn install --frozen-lockfile
-
-      - name: Publish with yarn command
-        if: inputs.package_manager == 'yarn'
-        run: yarn publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}
+        run: |
+          yarn install --frozen-lockfile
+          yarn publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}
 
       - name: Setup npm
         if: inputs.package_manager == 'npm'
-        run: npm ci
-
-      - name: Publish with npm command
-        if: inputs.package_manager == 'npm'
-        run: npm publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}
+        run: |
+          npm ci
+          npm publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}
