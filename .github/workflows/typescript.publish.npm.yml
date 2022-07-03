@@ -47,9 +47,10 @@ jobs:
         if: inputs.tag == 'beta'
         run: |
           npm i -g json
-          echo "PACKAGE_VERSION=$(json -f package.json | json version)-beta.${{ github.event.number }}" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$(json -f package.json | json version)-beta.${{ github.run_attempt }}" >> $GITHUB_ENV
           json -I -f package.json -e "this.version=\"${{ env.PACKAGE_VERSION }}\""
- 
+        # reference: https://stackoverflow.com/questions/54310050/how-to-version-build-artifacts-using-github-actions
+
       - name: Setup yarn
         if: inputs.package_manager == 'yarn'
         run: |
