@@ -48,7 +48,7 @@ jobs:
         if: inputs.tag == 'beta'
         run: |
           npm i -g json
-          json -I -f package.json -e "this.version=\"$(json -f package.json | json version)-beta.${{ github.run_attempt }}\""
+          json -I -f package.json -e "this.version=\"$(json -f package.json | json version)-beta.${{ github.run_number }}\""
 
       - name: Setup yarn
         if: inputs.package_manager == 'yarn'

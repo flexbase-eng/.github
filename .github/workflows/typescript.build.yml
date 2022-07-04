@@ -76,14 +76,16 @@ jobs:
         echo "CLI_INSTALL=yarn install --frozen-lockfile" >> $GITHUB_ENV
         echo "CLI_BUILD=yarn build" >> $GITHUB_ENV
         echo "CLI_LINT=yarn lint" >> $GITHUB_ENV
-    
+        echo "CLI_PACKR=yarn packr" >> $GITHUB_ENV
+
     - name: Create environment variables for npm commands
       if: inputs.package_manager == 'npm'
       run: |
         echo "CLI_INSTALL=npm ci" >> $GITHUB_ENV
         echo "CLI_BUILD=npm run build" >> $GITHUB_ENV
         echo "CLI_LINT=npm run lint" >> $GITHUB_ENV
-      
+        echo "CLI_PACKR=npm run packr" >> $GITHUB_ENV
+        
     - name: Install dependencies
       run: ${{ env.CLI_INSTALL }}
 
@@ -98,7 +100,7 @@ jobs:
 
     - name: Packr
       if: ${{ inputs.use_packr == true }}
-      run: yarn packr ${{ env.PACKR_MAJOR_VERSION }} ${{ env.PACKR_MINOR_VERSION }} ${{ env.PACKR_REVISION }}
+      run: ${{ env.CLI_PACKR }} ${{ env.PACKR_MAJOR_VERSION }} ${{ env.PACKR_MINOR_VERSION }} ${{ env.PACKR_REVISION }}
 
       # note - this uploads the build as dist, please note to download it will be called dist for deploy contexts
     - name: Store build artifacts
