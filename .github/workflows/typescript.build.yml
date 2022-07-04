@@ -18,6 +18,10 @@ on:
       revision:
         required: false
         type: string
+      package_manager:
+        required: false
+        type: string
+        default: 'yarn'
 
 env:
   PACKR_MAJOR_VERSION: 
@@ -35,18 +39,11 @@ jobs:
           configuration-path: .github/pr-labeler.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  yarn:
-    name: Build/Lint/Test/Packr
+
+  packr-versions:
+    name: Packr version modifier
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # Disabling shallow clone is recommended for improving relevancy of reporting
-    - uses: actions/setup-node@v3
-      with:
-        node-version: latest
-        cache: 'yarn'
-
     - name: Build major version env
       if: ${{ inputs.major_version != ''}}
       run: echo 'PACKR_MAJOR_VERSION=--major ${{ inputs.major_version }}' >> $GITHUB_ENV
@@ -58,23 +55,52 @@ jobs:
     - name: Build revision env
       if: ${{ inputs.revision != ''}}
       run: echo 'PACKR_REVISION=--revision ${{ inputs.revision }}' >> $GITHUB_ENV
+  
+  build-lint-test:
+    name: Build/Lint/Test/Packr
+    needs: [packr-versions]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 
+    
+    - uses: actions/setup-node@v3
+      with:
+        node-version: latest
+        cache: ${{ inputs.package_manager }}
 
-    - name: Install
-      run: yarn install --frozen-lockfile
+    - name: Create environment variables for yarn commands
+      if: inputs.package_manager == 'yarn'
+      run: |
+        echo "CLI_INSTALL=yarn install --frozen-lockfile" >> $GITHUB_ENV
+        echo "CLI_BUILD=yarn build" >> $GITHUB_ENV
+        echo "CLI_LINT=yarn lint" >> $GITHUB_ENV
+    
+    - name: Create environment variables for npm commands
+      if: inputs.package_manager == 'npm'
+      run: |
+        echo "CLI_INSTALL=npm ci" >> $GITHUB_ENV
+        echo "CLI_BUILD=npm run build" >> $GITHUB_ENV
+        echo "CLI_LINT=npm run lint" >> $GITHUB_ENV
+      
+    - name: Install dependencies
+      run: ${{ env.CLI_INSTALL }}
 
-    - name: Build
-      run: yarn build
+    - name: Build app
+      run: ${{ env.CLI_BUILD }}
 
-    - name: Lint
-      run: yarn lint
+    - name: Lint app
+      run: ${{ env.CLI_LINT }}
 
-    - name: Test
-      run: yarn test    
+    - name: Test app
+      run: ${{ inputs.package_manager }} test
 
     - name: Packr
       if: ${{ inputs.use_packr == true }}
       run: yarn packr ${{ env.PACKR_MAJOR_VERSION }} ${{ env.PACKR_MINOR_VERSION }} ${{ env.PACKR_REVISION }}
 
+      # note - this uploads the build as dist, please note to download it will be called dist for deploy contexts
     - name: Store build artifacts
       if: ${{ inputs.package_folder != ''}}
       uses: actions/upload-artifact@v3
