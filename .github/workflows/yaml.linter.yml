@@ -6,6 +6,7 @@ jobs:
     name: 'YAML linter'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -14,4 +15,4 @@ jobs:
       - name: check location
         run: pwd && ls
       - name: 'Run linter'
-        run: yamllint *.yml
+        run: cd workflows && yamllint *.yml
