@@ -11,34 +11,112 @@ on:
       branch_name:
         required: true
         type: string
+      service_name:
+        required: true
+        type: string
+      build_artifact:
+        required: true
+        type: string
       close_on_merge:
         required: false
+        type: boolean
         default: true
-env:
-  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      package_manager:
+        required: false
+        type: string
+        default: yarn
 
+env:
+  PROJECT_ID: ${{ secrets.RUN_PROJECT }}
+  SERVICE_NAME: ${{ inputs.service_name }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GCP_STORAGE_API_EMAIL: ${{ secrets.GCP_STORAGE_API_EMAIL }}
+  GCP_STORAGE_API_KEY: ${{ secrets.GCP_STORAGE_API_KEY }}
+  GCP_STORAGE_BUCKET: ${{ secrets.GCP_STORAGE_BUCKET }}
+  GCP_SECRETS_API_EMAIL: ${{ secrets.GCP_SECRETS_API_EMAIL }}
+  GCP_SECRETS_API_KEY: ${{ secrets.GCP_SECRETS_API_KEY }}
+  GCP_SECRETS_ROOT: ${{ secrets.GCP_SECRETS_ROOT }}
+  GCP_TASKS_API_EMAIL: ${{ secrets.GCP_TASKS_API_EMAIL }}
+  GCP_TASKS_API_KEY: ${{ secrets.GCP_TASKS_API_KEY }}
+  GCP_TASKS_QUEUE: ${{ secrets.GCP_TASKS_QUEUE }}
+  GCP_TASKS_BASEURL: ${{ secrets.GCP_TASKS_BASEURL }}
+  GCP_BUILD_API_EMAIL: ${{ secrets.GCP_BUILD_API_EMAIL }}
+  GCP_BUILD_API_KEY: ${{ secrets.GCP_BUILD_API_KEY }}
+  GCP_BUILD_PROJECT: ${{ secrets.GCP_BUILD_PROJECT }}
+  GCP_BUILD_REGION: ${{ secrets.GCP_BUILD_REGION }}
+  PLATTER_INSTANCE: ${{ secrets.PLATTER_INSTANCE }}
+  PLATTER_POSTGRES_CLIENT: ${{ secrets.PLATTER_POSTGRES_CLIENT }}
+  PLATTER_BRANCH_NAME: ${GITHUB_REF##*/}
+  PLATTER_API_KEY: ${{ secrets.PLATTER_API_KEY }}
+  QBO_CLIENT_ID: ${{ secrets.QBO_CLIENT_ID }}
+  QBO_CLIENT_SECRET: ${{ secrets.QBO_CLIENT_SECRET }}
+  QBO_ENVIRONMENT: ${{ secrets.QBO_ENVIRONMENT }}
+  QBO_CALLBACK: ${{ secrets.QBO_CALLBACK }}
+  QBO_CB_REDIRECT: ${{ secrets.QBO_CB_REDIRECT }}
+  STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
+  PLAID_CLIENT_ID: ${{ secrets.PLAID_CLIENT_ID }}
+  PLAID_ENVIRONMENT: ${{ secrets.PLAID_ENVIRONMENT }}
+  PLAID_SECRET: ${{ secrets.PLAID_SECRET }}
+  HELLOSIGN_API_KEY: ${{ secrets.HELLOSIGN_API_KEY }}
+  HELLOSIGN_CLIENT_ID: ${{ secrets.HELLOSIGN_CLIENT_ID }}
+  HELLOSIGN_TEST_MODE: ${{ secrets.HELLOSIGN_TEST_MODE }}
+  CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+  CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  CORS_ORIGINS: '"*"'
+  TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+  TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+  TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
+  TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
+  TWILIO_MESSAGING_SERVICE_SID: ${{ secrets.TWILIO_MESSAGING_SERVICE_SID }}
+  TWILIO_VERIFICATION_SERVICE_SID: ${{ secrets.TWILIO_VERIFICATION_SERVICE_SID }}
+  VERIFICATION_SERVICE_SID: ${{ secrets.VERIFICATION_SERVICE_SID }}
+  REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
 jobs:
   branch-stack:
-    if: !(event.pull_request.closed)
+    if: !event.pull_request.closed
     runs-on: ubuntu-18.04
-    steps:
-      # pull down compiled build artifact to build_artifact_download_path locally
-      - uses: actions/download-artifact@v3
+    steps:      
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          name: ${{ inputs.build_artifact_download }}
-          path: ${{ inputs.build_artifact_download_path }}
-      # deploy artifact
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v1.2
+          node-version: '16'
+      
+      - name: Retrieve build artifacts
+        uses: actions/download-artifact@v3
         with:
-          publish-dir: ${{ inputs.build_artifact_download_path }}
-          production-branch: main
-          deploy-message: "Deploy from GitHub Actions"
-          enable-pull-request-comment: true
-          enable-commit-comment: true
-          overwrites-pull-request-comment: true
-        timeout-minutes: 1
+          name: ${{ inputs.build_artifact }}
+
+       # Google Cloud: Configure Workload Identity Federation and generate an access token.
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          workload_identity_provider: 'projects/${{ secrets.project_id }}/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: '${{ secrets.RUN_SA_EMAIL }}'
+      
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+
+      # Build and push image to Google Container Registry
+      - name: Build
+        run: |-
+          gcloud builds submit \
+            --quiet \
+            --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
+
+      # Deploy
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v0'
+        with:
+          service: 'hello-cloud-run'
+          image: 'gcr.io/cloudrun/hello'
+
+      - name: 'Use output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
+
+  # optional job to clean up branch when merged
   branch-unstack:
     if: event.pull_request.closed && inputs.close_on_merge == true
     runs-on: ubuntu-latest
