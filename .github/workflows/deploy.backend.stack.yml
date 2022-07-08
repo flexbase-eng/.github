@@ -1,0 +1,50 @@
+name: Deploy a backend stack to google cloud
+
+# goal: any user can define this workflow to create a backend stack with the following:
+# 1. postgresql db hosted with platter
+# 2. api services with a specific base url / domain
+# considerations: platter doesn't like certain types of inputs for branch name 
+# - auto clean branches for these special characters
+on:
+  workflow_call:
+    inputs:
+      branch_name:
+        required: true
+        type: string
+      close_on_merge:
+        required: false
+        default: true
+env:
+  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  branch-stack:
+    if: !(event.pull_request.closed)
+    runs-on: ubuntu-18.04
+    steps:
+      # pull down compiled build artifact to build_artifact_download_path locally
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.build_artifact_download }}
+          path: ${{ inputs.build_artifact_download_path }}
+      # deploy artifact
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v1.2
+        with:
+          publish-dir: ${{ inputs.build_artifact_download_path }}
+          production-branch: main
+          deploy-message: "Deploy from GitHub Actions"
+          enable-pull-request-comment: true
+          enable-commit-comment: true
+          overwrites-pull-request-comment: true
+        timeout-minutes: 1
+  branch-unstack:
+    if: event.pull_request.closed && inputs.close_on_merge == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: run the unstacking of this branch
+        run: node tools/dev-pr-teardown $GITHUB_HEAD_REF
+    # lots of env variables exist, do we need all this or can we just call platter 
+    # validate we 
+

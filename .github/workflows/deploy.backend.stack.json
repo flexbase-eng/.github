@@ -1,0 +1,11 @@
+{
+    "name": "Deploy a backend Stack to Google Cloud",
+    "description": "Deploy a backend Stack to Google Cloud",
+    "iconName": "deploy.backend.stack",
+    "categories": [
+        "Deploy", "API"
+    ],
+    "filePatterns": [
+        "package.json$"
+    ]
+}
