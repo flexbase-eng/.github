@@ -3,7 +3,7 @@ on:
   - pull_request
 jobs:
   lint-gha-files:
-    name: 'YAML linter'
+    name: 'YAML linter for GHA shared workflows'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -12,7 +12,5 @@ jobs:
           node-version: 16
       - name: 'install linter'
         run: npm i -g yaml-lint
-      - name: check location
-        run: pwd && ls
       - name: 'Run linter'
         run: cd .github/workflows && yamllint *.yml
