@@ -15,4 +15,4 @@ jobs:
       - name: check location
         run: pwd && ls
       - name: 'Run linter'
-        run: cd workflows && yamllint *.yml
+        run: cd .github/workflows && yamllint *.yml
