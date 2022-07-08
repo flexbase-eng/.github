@@ -11,5 +11,7 @@ jobs:
           node-version: 16
       - name: 'install linter'
         run: npm i -g yaml-lint
+      - name: check location
+        run: pwd && ls
       - name: 'Run linter'
         run: yamllint *.yml
