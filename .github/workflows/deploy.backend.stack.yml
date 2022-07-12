@@ -75,7 +75,7 @@ env:
 jobs:
   branch-stack:
     # run a stack for PRs
-    if: github.event_name == 'pull_request' && contains([opened, reopened, synchronize], github.event.action)
+    if: github.event_name == 'pull_request' && contains(fromJson('["opened", "reopened", "synchronize"]'), github.event.action)
     runs-on: ubuntu-18.04
     steps:      
       - uses: actions/checkout@v3
@@ -137,7 +137,7 @@ jobs:
   # remove vendor webhooks
   # remove google secrets, but do we need this with github secrets?
   branch-unstack:
-    if: event.pull_request.closed && inputs.close_on_merge == true 
+    if: github.event.pull_request.closed && inputs.close_on_merge == true 
     runs-on: ubuntu-latest
     steps:
       - name: clean branch name for platter
