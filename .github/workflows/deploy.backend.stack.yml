@@ -84,13 +84,11 @@ jobs:
           node-version: '16'
       
       - name: clean branch name for platter
-        uses: ubuntu-latest
         run: echo echo "${{ $GITHUB_HEAD_REF }}" | tr -cd '[:alnum:]_-' >> $GITHUB_CLEANED_BRANCH
         # Platter initialization and branch creation
         # pass in instantiated instance details to Google cloud for baking to Google Cloud Container
       - if: github.head_ref != 'production' && github.head_ref != 'main' && github.head_ref
         name: Create Platter DB for branch
-        uses: ubuntu-latest
         run: npx platter postgres branch create $GITHUB_HEAD_REF --instance flexbase-api
         
        # Google Cloud: Configure Workload Identity Federation and generate an access token.
