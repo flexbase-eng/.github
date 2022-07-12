@@ -1,6 +1,6 @@
 name: Deploy a backend stack to google cloud
 
-# goal: any user can define this workflow to create a backend stack with the following:
+# goal: any user can utilize this workflow to create a backend stack with the following:
 # 1. postgresql db hosted with platter
 # 2. api services with a specific base url / domain
 # considerations: platter doesn't like certain types of inputs for branch name 
@@ -11,6 +11,7 @@ on:
       branch_name:
         required: true
         type: string
+        default: main
       service_name:
         required: true
         type: string
@@ -29,7 +30,10 @@ on:
 env:
   PROJECT_ID: ${{ secrets.RUN_PROJECT }}
   SERVICE_NAME: ${{ inputs.service_name }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PLATTER_INSTANCE: ${{ secrets.PLATTER_INSTANCE }}
+  PLATTER_POSTGRES_CLIENT: ${{ secrets.PLATTER_POSTGRES_CLIENT }}
+  PLATTER_BRANCH_NAME: ${GITHUB_REF##*/}
+  PLATTER_API_KEY: ${{ secrets.PLATTER_API_KEY }}
   GCP_STORAGE_API_EMAIL: ${{ secrets.GCP_STORAGE_API_EMAIL }}
   GCP_STORAGE_API_KEY: ${{ secrets.GCP_STORAGE_API_KEY }}
   GCP_STORAGE_BUCKET: ${{ secrets.GCP_STORAGE_BUCKET }}
@@ -44,10 +48,6 @@ env:
   GCP_BUILD_API_KEY: ${{ secrets.GCP_BUILD_API_KEY }}
   GCP_BUILD_PROJECT: ${{ secrets.GCP_BUILD_PROJECT }}
   GCP_BUILD_REGION: ${{ secrets.GCP_BUILD_REGION }}
-  PLATTER_INSTANCE: ${{ secrets.PLATTER_INSTANCE }}
-  PLATTER_POSTGRES_CLIENT: ${{ secrets.PLATTER_POSTGRES_CLIENT }}
-  PLATTER_BRANCH_NAME: ${GITHUB_REF##*/}
-  PLATTER_API_KEY: ${{ secrets.PLATTER_API_KEY }}
   QBO_CLIENT_ID: ${{ secrets.QBO_CLIENT_ID }}
   QBO_CLIENT_SECRET: ${{ secrets.QBO_CLIENT_SECRET }}
   QBO_ENVIRONMENT: ${{ secrets.QBO_ENVIRONMENT }}
@@ -74,7 +74,8 @@ env:
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
 jobs:
   branch-stack:
-    if: !event.pull_request.closed
+    # run a stack for PRs
+    if: github.event_name == 'pull_request' && contains([opened, reopened, synchronize], github.event.action)
     runs-on: ubuntu-18.04
     steps:      
       - uses: actions/checkout@v3
@@ -82,11 +83,16 @@ jobs:
         with:
           node-version: '16'
       
-      - name: Retrieve build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ inputs.build_artifact }}
-
+      - name: clean branch name for platter
+        uses: ubuntu-latest
+        run: echo echo "${{ $GITHUB_HEAD_REF }}" | tr -cd '[:alnum:]_-' >> $GITHUB_CLEANED_BRANCH
+        # Platter initialization and branch creation
+        # pass in instantiated instance details to Google cloud for baking to Google Cloud Container
+      - if: github.head_ref != 'production' && github.head_ref != 'main' && github.head_ref
+        name: Create Platter DB for branch
+        uses: ubuntu-latest
+        run: npx platter postgres branch create $GITHUB_HEAD_REF --instance flexbase-api
+        
        # Google Cloud: Configure Workload Identity Federation and generate an access token.
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -115,14 +121,36 @@ jobs:
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
+      
+      # set up dns
+      - uses: rez0n/create-dns-record@v2.1
+        if: 1 == 2
+        with:
+          type: "C"
+          name: ${{ steps.deploy.outputs.url }}
+          content: ghs.googlehosted.com
+          ttl: 1
+          proxied: true
+          token: ${{ secrets.CLOUDFLARE_TOKEN }}
+          zone: ${{ secrets.CLOUDFLARE_ZONE }}
 
   # optional job to clean up branch when merged
+  # remove dns entry
+  # remove running service
+  # remove vendor webhooks
+  # remove google secrets, but do we need this with github secrets?
   branch-unstack:
-    if: event.pull_request.closed && inputs.close_on_merge == true
+    if: event.pull_request.closed && inputs.close_on_merge == true 
     runs-on: ubuntu-latest
     steps:
       - name: run the unstacking of this branch
-        run: node tools/dev-pr-teardown $GITHUB_HEAD_REF
+        run: npx platter postgres branch delete $1 --instance ${{PLATTER_INSTANCE}}
+      - uses: kriasoft/delete-dns-record@v1
+        with:
+          name: "{PR}-review.example.com"
+          token: ${{ secrets.CLOUDFLARE_TOKEN }}
+          zone: ${{ secrets.CLOUDFLARE_ZONE }}
+        #run: node tools/dev-pr-teardown $GITHUB_HEAD_REF
     # lots of env variables exist, do we need all this or can we just call platter 
     # validate we 
 
