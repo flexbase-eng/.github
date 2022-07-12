@@ -84,12 +84,12 @@ jobs:
           node-version: '16'
       
       - name: clean branch name for platter
-        run: echo echo "${{ GITHUB_HEAD_REF }}" | tr -cd '[:alnum:]_-' >> $GITHUB_CLEANED_BRANCH
+        run: echo echo "${{ github.head_ref }}" | tr -cd '[:alnum:]_-' >> $GITHUB_CLEANED_BRANCH
         # Platter initialization and branch creation
         # pass in instantiated instance details to Google cloud for baking to Google Cloud Container
       - if: github.head_ref != 'production' && github.head_ref != 'main' && github.head_ref
         name: Create Platter DB for branch
-        run: npx platter postgres branch create $GITHUB_HEAD_REF --instance flexbase-api
+        run: npx platter postgres branch create ${{ env.GITHUB_CLEANED_BRANCH }} --instance flexbase-api
         
        # Google Cloud: Configure Workload Identity Federation and generate an access token.
       - id: 'auth'
@@ -141,7 +141,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: clean branch name for platter
-        run: echo echo "${{ GITHUB_HEAD_REF }}" | tr -cd '[:alnum:]_-' >> $GITHUB_CLEANED_BRANCH
+        run: echo echo "${{ github.head_ref }}" | tr -cd '[:alnum:]_-' >> $GITHUB_CLEANED_BRANCH
       - name: run the unstacking of this branch
         run: npx platter postgres branch delete $1 --instance ${{ env.GITHUB_CLEANED_BRANCH }}
       - uses: kriasoft/delete-dns-record@v1
