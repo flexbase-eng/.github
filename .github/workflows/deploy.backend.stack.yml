@@ -75,7 +75,7 @@ env:
 jobs:
   branch-stack:
     # run a stack for PRs
-    if: github.event_name == 'pull_request' && contains(fromJson('["opened", "reopened"]'), github.event.action)
+    if: github.event_name == 'pull_request' && contains(fromJson('["opened", "reopened", "synchronize"]'), github.event.action)
     runs-on: ubuntu-18.04
     steps:      
       - uses: actions/checkout@v3
@@ -88,7 +88,7 @@ jobs:
           string1=${{ github.head_ref }};
           string2="${string1//[^[:alpha:]]/}";
           echo "GITHUB_CLEANED_BRANCH=$string2" >> $GITHUB_ENV
-
+          
         # Platter initialization and branch creation
         # pass in instantiated instance details to Google cloud for baking to Google Cloud Container
       - if: github.head_ref != 'production' && github.head_ref != 'main' && github.head_ref
