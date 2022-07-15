@@ -98,6 +98,9 @@ jobs:
        # Google Cloud: Configure Workload Identity Federation and generate an access token.
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
+        permissions:
+          contents: 'read'
+          id-token: 'write'
         uses: 'google-github-actions/auth@v0'
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
