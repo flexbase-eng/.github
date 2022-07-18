@@ -2,8 +2,8 @@ name: Artifact Cleanup
 
 on:
   schedule:
-    # Every day at 10:20am
-    - cron: "20 10 * * *"
+    # Every day at 1:05 pm
+    - cron: "05 13 * * *"
 
 jobs:
   cleanup-artifacts:
