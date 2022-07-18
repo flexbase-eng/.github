@@ -4,8 +4,5 @@
     "iconName": "artifact.cleanup",
     "categories": [
         "Artifacts"
-    ],
-    "filePatterns": [
-        "package.json$"
     ]
 }
