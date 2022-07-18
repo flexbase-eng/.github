@@ -1,0 +1,14 @@
+name: Artifact Cleanup
+
+on:
+  schedule:
+    # Every day at 10:20am
+    - cron: "20 10 * * *"
+
+jobs:
+  cleanup-artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: flexbase-eng/action-artifact-cleanup@main
