@@ -1,0 +1,11 @@
+{
+    "name": "Deploy Web App to Netlify",
+    "description": "Flexbase web deployment workflow",
+    "iconName": "deploy.web.netlify",
+    "categories": [
+        "Deploy", "Web"
+    ],
+    "filePatterns": [
+        "package.json$"
+    ]
+}
