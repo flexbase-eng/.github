@@ -197,6 +197,37 @@ Input | Type | Default | Required
 
 1. on merge to `main`, updates Release draft
 
+### <a id="run.postman.api.tests"></a> run.postman.api.tests
+Runs Postman API tests and outputs junit and html reports.
+
+#### Usage
+Entire worfklow for reference to add to individual repository.
+```
+name: Run Postman API Tests Workflow
+on:
+  push:
+    branches: 'main'
+
+jobs:
+  run-postman-api-tests:
+    uses: flexbase-eng/.github/.github/workflows/postman.api.test.yml@main
+    with:
+      postman_collection_directory: <your postman collection directory goes here>
+      postman_environment_directory: <your post man environment directory goes here>
+```
+
+#### Inputs
+
+Input | Type | Default | Required
+--- | --- | --- | ---
+postman_collection_directory | string | none | yes
+postman_environment_directory | string | none | yes
+
+#### Steps
+
+1. Determine the directory for Postman collection where API tests are located
+2. Determine the directory for Postman environment file needed to run the tests
+
 #### References
 - learn more about github release management here: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
 - Release drafter github action: https://github.com/release-drafter/release-drafter

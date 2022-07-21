@@ -1,4 +1,4 @@
-name: Postman API Test Workflow
+name: Run Postman API Tests Workflow
 on:
   workflow_call:
       inputs:
