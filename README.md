@@ -6,6 +6,7 @@
   * [typescript.publish.npm](#typescript.publish.npm)
   * [release.notifier](#release.notifier)
   * [release.drafter](#release.drafter)
+  * [run.postman.api.tests](#run.postman.api.tests)
 
 ---
 
@@ -117,6 +118,8 @@ package_visibility | `string` | public | no
 2. Setup yarn
 3. Publish to npm
 
+---
+
 ### <a id="release.notifier"></a> release.notifier
 Workflow to utilize a common pattern for release notifications when publishing a release via github.  Notifier aggregates the release notes and pushes this to a release channel. `gha_deployment_failure_url` defines the URL you would like to set for log review of the production deployment failure.
 
@@ -168,6 +171,8 @@ Assumptions: production deployment triggered based on published release notes.  
 2. if success, post slack notification to release channel
 3. if failure, post slack notificaiton to release channel with the `gha_deployment_failure_url` to help developers identify root cause.
 
+---
+
 ### <a id="release.drafter"></a> release.drafter
 Drafts merged PR's into a github release draft format, aggregating labels to various sections.
 
@@ -200,3 +205,36 @@ Input | Type | Default | Required
 #### References
 - learn more about github release management here: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
 - Release drafter github action: https://github.com/release-drafter/release-drafter
+
+---
+
+### <a id="run.postman.api.tests"></a> run.postman.api.tests
+Runs Postman API tests and outputs junit and html reports.
+
+#### Usage
+Entire worfklow for reference to add to individual repository.
+```
+name: Run Postman API Tests Workflow
+on:
+  push:
+    branches: 'main'
+
+jobs:
+  run-postman-api-tests:
+    uses: flexbase-eng/.github/.github/workflows/postman.api.test.yml@main
+    with:
+      postman_collection_directory: <your postman collection directory goes here>
+      postman_environment_directory: <your post man environment directory goes here>
+```
+
+#### Inputs
+
+Input | Type | Default | Required
+--- | --- | --- | ---
+postman_collection_directory | string | none | yes
+postman_environment_directory | string | none | yes
+
+#### Steps
+
+1. Determine the directory for Postman collection where API tests are located
+2. Determine the directory for Postman environment file needed to run the tests
