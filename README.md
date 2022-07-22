@@ -6,6 +6,7 @@
   * [typescript.publish.npm](#typescript.publish.npm)
   * [release.notifier](#release.notifier)
   * [release.drafter](#release.drafter)
+  * [run.postman.api.tests](#run.postman.api.tests)
 
 ---
 
@@ -117,6 +118,8 @@ package_visibility | `string` | public | no
 2. Setup yarn
 3. Publish to npm
 
+---
+
 ### <a id="release.notifier"></a> release.notifier
 Workflow to utilize a common pattern for release notifications when publishing a release via github.  Notifier aggregates the release notes and pushes this to a release channel. `gha_deployment_failure_url` defines the URL you would like to set for log review of the production deployment failure.
 
@@ -168,6 +171,8 @@ Assumptions: production deployment triggered based on published release notes.  
 2. if success, post slack notification to release channel
 3. if failure, post slack notificaiton to release channel with the `gha_deployment_failure_url` to help developers identify root cause.
 
+---
+
 ### <a id="release.drafter"></a> release.drafter
 Drafts merged PR's into a github release draft format, aggregating labels to various sections.
 
@@ -196,6 +201,12 @@ Input | Type | Default | Required
 #### Steps
 
 1. on merge to `main`, updates Release draft
+
+#### References
+- learn more about github release management here: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
+- Release drafter github action: https://github.com/release-drafter/release-drafter
+
+---
 
 ### <a id="run.postman.api.tests"></a> run.postman.api.tests
 Runs Postman API tests and outputs junit and html reports.
@@ -227,7 +238,3 @@ postman_environment_directory | string | none | yes
 
 1. Determine the directory for Postman collection where API tests are located
 2. Determine the directory for Postman environment file needed to run the tests
-
-#### References
-- learn more about github release management here: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
-- Release drafter github action: https://github.com/release-drafter/release-drafter
