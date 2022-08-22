@@ -23,7 +23,7 @@ env:
 
 jobs:
   deploy:
-      runs-on: ubuntu-18.04
+      runs-on: ubuntu-latest
       steps:
         # pull down compiled build artifact to build_artifact_download_path locally
         - uses: actions/download-artifact@v3
