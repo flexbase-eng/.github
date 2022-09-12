@@ -23,21 +23,21 @@ env:
 
 jobs:
   deploy:
-      runs-on: ubuntu-latest
-      steps:
-        # pull down compiled build artifact to build_artifact_download_path locally
-        - uses: actions/download-artifact@v3
-          with:
-            name: ${{ inputs.build_artifact_download }}
-            path: ${{ inputs.build_artifact_download_path }}
-        # deploy artifact
-        - name: Deploy to Netlify
-          uses: nwtgck/actions-netlify@v1.2
-          with:
-            publish-dir: ${{ inputs.build_artifact_download_path }}
-            production-branch: main
-            deploy-message: "Deploy from GitHub Actions"
-            enable-pull-request-comment: true
-            enable-commit-comment: true
-            overwrites-pull-request-comment: true
-          timeout-minutes: 1
+    runs-on: self-hosted
+    steps:
+      # pull down compiled build artifact to build_artifact_download_path locally
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.build_artifact_download }}
+          path: ${{ inputs.build_artifact_download_path }}
+      # deploy artifact
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v1.2
+        with:
+          publish-dir: ${{ inputs.build_artifact_download_path }}
+          production-branch: main
+          deploy-message: 'Deploy from GitHub Actions'
+          enable-pull-request-comment: true
+          enable-commit-comment: true
+          overwrites-pull-request-comment: true
+        timeout-minutes: 1

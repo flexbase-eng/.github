@@ -24,9 +24,9 @@ env:
 permissions:
   contents: read
 
-jobs:  
+jobs:
   prod-notify:
-    runs-on: ubuntu-18.04
+    runs-on: self-hosted
     steps:
       - name: Get Latest Release List
         if: ${{ success() }}
@@ -109,5 +109,3 @@ jobs:
                 }
               ]
             }
-
-      

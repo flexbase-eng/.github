@@ -1,4 +1,4 @@
-name: Update Github Release Draft 
+name: Update Github Release Draft
 # this should be used explicitly for push and pull_request -> opened, reopened, synchronized
 
 on:
@@ -10,9 +10,9 @@ permissions:
 jobs:
   update_release_draft:
     permissions:
-      contents: write  # for release-drafter/release-drafter to create a github release
-      pull-requests: write  # for release-drafter/release-drafter to add label to PR
-    runs-on: ubuntu-latest
+      contents: write # for release-drafter/release-drafter to create a github release
+      pull-requests: write # for release-drafter/release-drafter to add label to PR
+    runs-on: self-hosted
     steps:
       # (Optional) GitHub Enterprise requires GHE_HOST variable set
       #- name: Set GHE_HOST

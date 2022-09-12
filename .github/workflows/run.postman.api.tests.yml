@@ -1,38 +1,38 @@
 name: Run Postman API Tests Workflow
 on:
   workflow_call:
-      inputs:
-        postman_collection_directory:
-          required: true
-          type: string
-        postman_environment_directory:
-          required: true
-          type: string
+    inputs:
+      postman_collection_directory:
+        required: true
+        type: string
+      postman_environment_directory:
+        required: true
+        type: string
 
 jobs:
   run-postman-api-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-    - name: Make the directory for test results
-      run: mkdir -p ./postman/reports
-    - name: Install Dependencies
-      run: npm i -g newman newman-reporter-junitfull newman-reporter-htmlextra
-    # Run the POSTMAN collection
-    - name: Run Postman API Tests
-      run: |
-       newman run ${{ inputs.postman_collection_directory }} -e ${{ inputs.postman_environment_directory }} \
-       --reporters junit,htmlextra,emojitrain --reporter-junit-export ./postman/reports/testSummary.xml \
-       --reporter-htmlextra-export ./postman/reports/testSummary.html
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: always()
-      with:
-        files: "./postman/reports/testSummary.xml"
-    # Upload the contents of Test Results directory to workspace
-    - name: Output the test results
-      uses: actions/upload-artifact@v2
-      with: 
-       name: PostManAPITestResults
-       path: ./postman/reports/testSummary.html
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Make the directory for test results
+        run: mkdir -p ./postman/reports
+      - name: Install Dependencies
+        run: npm i -g newman newman-reporter-junitfull newman-reporter-htmlextra
+      # Run the POSTMAN collection
+      - name: Run Postman API Tests
+        run: |
+          newman run ${{ inputs.postman_collection_directory }} -e ${{ inputs.postman_environment_directory }} \
+          --reporters junit,htmlextra,emojitrain --reporter-junit-export ./postman/reports/testSummary.xml \
+          --reporter-htmlextra-export ./postman/reports/testSummary.html
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: './postman/reports/testSummary.xml'
+      # Upload the contents of Test Results directory to workspace
+      - name: Output the test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: PostManAPITestResults
+          path: ./postman/reports/testSummary.html

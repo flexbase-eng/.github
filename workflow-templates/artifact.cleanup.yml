@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     # Every day at 1:05 pm
-    - cron: "05 13 * * *"
+    - cron: '05 13 * * *'
 
 jobs:
   cleanup-artifacts:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 10
 
     steps:
