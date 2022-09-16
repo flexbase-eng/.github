@@ -30,7 +30,7 @@ env:
 
 jobs:
   pr-labeler:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v3
@@ -42,7 +42,7 @@ jobs:
 
   packr-versions:
     name: Packr version modifier
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Build major version env
         if: ${{ inputs.major_version != ''}}
@@ -59,7 +59,7 @@ jobs:
   build-lint-test:
     name: Build/Lint/Test/Packr
     needs: [packr-versions]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
