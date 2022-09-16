@@ -28,7 +28,7 @@ env:
 jobs:
   npmjs:
     name: Publish to npmjs
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Retrieve build artifacts
         uses: actions/download-artifact@v3

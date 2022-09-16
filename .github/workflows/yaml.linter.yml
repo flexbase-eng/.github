@@ -4,7 +4,7 @@ on:
 jobs:
   lint-gha-files:
     name: 'YAML linter for GHA shared workflows'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
