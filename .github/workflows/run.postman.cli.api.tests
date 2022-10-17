@@ -1,0 +1,39 @@
+name: Run Postman API Tests Workflow
+on:
+  workflow_call:
+    inputs:
+      postman_collection_directory:
+        required: true
+        type: string
+      postman_environment_directory:
+        required: true
+        type: string
+
+jobs:
+  run-postman-cli-api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Make the directory for test results
+        run: mkdir -p ./postman/reports
+      - name: Install Dependencies
+        run: curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+      # Run the POSTMAN collection
+      - name: Run Postman API Tests
+        run: |
+          postman login --with-api-key PMAK-62d196bd0315a720698784ba-0fb9e1b869883c3e6a1ddde56ee4759f8c
+          postman collection run 21446761-a2b4fff8-7ab9-4a90-a7d9-6055d9b993f1 -e 21446761-a8e1ae02-e232-47a6-8148-ddf6a3873d72 -i 21446761-48c3fbe6-323f-4f0c-bc5e-406646d5c394 \
+          --reporters junit,htmlextra,emojitrain --reporter-junit-export ./postman/reports/testSummary.xml \
+          --reporter-htmlextra-export ./postman/reports/testSummary.html
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: './postman/reports/testSummary.xml'
+      # Upload the contents of Test Results directory to workspace
+      - name: Output the test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: PostManAPITestResults
+          path: ./postman/reports/testSummary.html
