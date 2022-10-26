@@ -32,7 +32,7 @@ project_id | `string` | false | true
 
 #### Steps
 
-1. Authenticate with appropraite workload identity provider and service impersonation token auth dance
+1. Authenticate with appropriate workload identity provider and service impersonation token auth dance
 2. set up cloud sdk
 3. push container to google cloud registry with github sha as tag
 4. deploy the registered container to the appropriate project namespace
