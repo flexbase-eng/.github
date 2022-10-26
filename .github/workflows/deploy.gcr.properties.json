@@ -1,0 +1,11 @@
+{
+    "name": "Google Cloud Run Deploy",
+    "description": "Flexbase Google Cloud Deployment",
+    "iconName": "deploy.gcr",
+    "categories": [
+        "Deployment", "GCR"
+    ],
+    "filePatterns": [
+        "package.json$"
+    ]
+}

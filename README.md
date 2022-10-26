@@ -1,6 +1,7 @@
 # Flexbase github resources
 
 * [Workflows](#workflows)
+  * [deploy.gcr](#deploy.gcr)
   * [typescript.build](#typescript.build)
   * [typescript.sonarcloud](#typescript.sonarcloud)
   * [typescript.publish.npm](#typescript.publish.npm)
@@ -11,6 +12,33 @@
 ---
 
 ## <a id="workflows"></a> Workflows
+### <a id="deploy.gcr"></a> deploy.gcr
+#### Usage
+```
+jobs:
+  build:
+    uses: flexbase-eng/.github/.github/workflows/typescript.build.yml@main
+    with:
+      package_folder: output
+      revision: ${{github.run_number}}
+```
+
+#### Inputs
+
+Input | Type | Default | Required
+--- | --- | --- | ---
+service_name | `string` | false | true
+project_id | `string` | false | true
+
+#### Steps
+
+1. Authenticate with appropraite workload identity provider and service impersonation token auth dance
+2. set up cloud sdk
+3. push container to google cloud registry with github sha as tag
+4. deploy the registered container to the appropriate project namespace
+
+---
+
 
 ### <a id="typescript.build"></a> typescript.build
 

@@ -1,0 +1,53 @@
+name: Register Container Artifact and Deploy Google Cloud Run
+on:
+  workflow_call:
+    inputs:
+      service_name:
+        required: true
+        type: string
+      project_id:
+        required: true
+        type: string
+
+env:
+  SERVICE_NAME: ${{ inputs.service_name }}
+  PROJECT_ID: ${{ inputs.project_id }}
+
+jobs:
+  register-and-deploy:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+    # Google Cloud: Configure Workload Identity Federation and generate an access token.
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+      - run: echo "$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
+      # Build and push image to Google Container Registry
+      - name: Build and Push Container
+        run: |-
+          gcloud builds submit \
+            --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
+            --gcs-log-dir gs://artifacts.flexbase-api-development.appspot.com
+      # deploy latest container      
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v0'
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: 'us-central1'
+          image: "gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+      - name: 'Deployment URL'
+        run: echo "${{ steps.deploy.outputs.url }}"
