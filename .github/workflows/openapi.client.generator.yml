@@ -1,0 +1,51 @@
+name: Generate Openapi SDK
+on:
+  workflow_call:
+    inputs:
+      swagger_url:
+        required: true
+        type: string
+        default: 'https://petstore3.swagger.io/api/v3/openapi.json'
+      client_type:
+        required: false
+        type: string
+        default: 'typescript-axios'
+      additional_options:
+        required: false
+        type: string
+        default: 'supportsES6=true,withNodeImports=true,withInterfaces=true'  
+
+env:
+  SWAGGER_URL: ${{ inputs.swagger_url }}
+  CLIENT_TYPE: ${{ inputs.client_type }}
+  ADDITIONAL_OPTIONS: ${{ inputs.additional_options }}
+
+jobs:
+  generate-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '17'
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: npm install generators
+        run: npm install @openapitools/openapi-generator-cli
+
+      - name: generate typescript axios SDK
+        if: env.CLIENT_TYPE == 'typescript-axios'
+        run: |
+          npx openapi-generator-cli generate -i $SWAGGER_URL \
+          -g $CLIENT_TYPE -o client \
+          --additional-properties=$ADDITIONAL_OPTIONS
+      # add other generators as needed
+      # https://github.com/OpenAPITools/openapi-generator/tree/master/docs/generators#client-generators
+      
+      - name: run tests after the generated client is updated
+        run: yarn t

@@ -2,6 +2,7 @@
 
 * [Workflows](#workflows)
   * [deploy.gcr](#deploy.gcr)
+  * [openapi.client.generator](#openapi.client.generator)
   * [typescript.build](#typescript.build)
   * [typescript.sonarcloud](#typescript.sonarcloud)
   * [typescript.publish.npm](#typescript.publish.npm)
@@ -16,11 +17,11 @@
 #### Usage
 ```
 jobs:
-  build:
-    uses: flexbase-eng/.github/.github/workflows/typescript.build.yml@main
+  deploy-service:
+    uses: flexbase-eng/.github/.github/workflows/deploy.gcr.yml@main
     with:
-      package_folder: output
-      revision: ${{github.run_number}}
+      service_name: 'id-poc'
+      project_id: 'flexbase-api-development'
 ```
 
 #### Inputs
@@ -39,6 +40,31 @@ project_id | `string` | false | true
 
 ---
 
+## <a id="workflows"></a> Workflows
+### <a id="openapi.client.generator"></a> openapi.client.generator
+#### Usage
+```
+jobs:
+  generate-typescript-sdk:
+    uses: flexbase-eng/.github/.github/workflows/openapi.client.generator.yml@main
+    with:
+      swagger_url: 'https://petstore3.swagger.io/api/v3/openapi.json'
+```
+
+#### Inputs
+
+Input | Type | Default | Required
+--- | --- | --- | ---
+swagger_url | `string` | `https://petstore3.swagger.io/api/v3/openapi.json` | true
+client_type | `string` | `typescript-axios` | false
+additional_options | `string` | `supportsES6=true,withNodeImports=true,withInterfaces=true` | false
+
+#### Steps
+
+1. Set up generator tool
+2. generate client base sdk utilizing the openapi hosted json file
+
+---
 
 ### <a id="typescript.build"></a> typescript.build
 
