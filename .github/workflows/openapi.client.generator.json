@@ -1,0 +1,11 @@
+{
+    "name": "Openapi Client Generator",
+    "description": "generates SDKs based on the openapi spec",
+    "iconName": "openapi.client.generator",
+    "categories": [
+        "Openapi", "SDK"
+    ],
+    "filePatterns": [
+        "package.json$"
+    ]
+}
