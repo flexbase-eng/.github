@@ -22,7 +22,10 @@ on:
         required: false
         type: string
         default: 'yarn'
-
+      prisma: 
+        required: false
+        type: boolean
+        default: false
 env:
   PACKR_MAJOR_VERSION:
   PACKR_MINOR_VERSION:
@@ -89,6 +92,10 @@ jobs:
       - name: Install dependencies
         run: ${{ env.CLI_INSTALL }}
 
+      - name: Generate client
+        if: inputs.prisma == true
+        run: yarn generate
+        
       - name: Build app
         run: ${{ env.CLI_BUILD }}
 
