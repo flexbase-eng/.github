@@ -31,7 +31,7 @@ jobs:
           path: coverage
 
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: sonarsource/sonarcloud-github-action@v1.7
         with:
           args: >
             -Dsonar.organization=${{ env.SONAR_ORG }}
