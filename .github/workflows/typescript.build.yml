@@ -30,8 +30,6 @@ env:
   PACKR_MAJOR_VERSION:
   PACKR_MINOR_VERSION:
   PACKR_REVISION:
-permissions:
-  contents: read
 
 jobs:
   pr-labeler:
