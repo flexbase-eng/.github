@@ -28,14 +28,14 @@ jobs:
   prod-notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Latest Release List
-        if: ${{ success() }}
-        uses: octokit/request-action@v2.x
-        id: get_latest_release
-        with:
-          route: GET /repos/{owner}/{repo}/releases/latest
-          owner: ${{ github.repository_owner }}
-          repo: ${{ github.event.repository.name }}
+       - name: Get commits
+         uses: octokit/request-action@v2.x
+         id: get_commit_list
+         with:
+           route: GET /repos/{owner}/{repo}/commits
+           owner: ${{ github.repository_owner }}
+           repo: ${{ github.event.repository.name }}
+      
       - name: Post Success to a Slack channel
         if: ${{ success() }}
         id: slack-success
@@ -43,13 +43,12 @@ jobs:
         with:
           payload: |
             {
-              "text": "${{ github.event.repository.name }} has been shipped to production. Release notes are located below! :rocket:",
               "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "${{ env.RELEASE_TITLE }} Release ${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }}"
+                    "text": ":rocket: ${{ env.RELEASE_TITLE }} has been shipped to production. Commit info and links are below :rocket:"
                   }
                 },
                 {
@@ -59,21 +58,21 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Production URL*: <${{env.PRODUCTION_URL}}>"
+                    "text": "*Author*: ${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.author.name }}"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Github Release Page*: <${{ fromJSON(steps.get_latest_release.outputs.data).html_url }}|${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }}>"
+                    "text": "*Description*: ${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ${{ toJSON(fromJSON(steps.get_latest_release.outputs.data).body) }}
+                    "text": "*Commit Details*: ${{ fromJSON(steps.get_commit_list.outputs.data)[0].html_url }}"
                   }
                 },
                 {
@@ -88,13 +87,12 @@ jobs:
         with:
           payload: |
             {
-              "text": "There was an issue shipping ${{ github.event.repository.name }} to production.",
               "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "Deployment Failure for Flexbase Web Release"
+                    "text": "There was an issue shipping ${{ github.event.repository.name }} to production."
                   }
                 },
                 {
