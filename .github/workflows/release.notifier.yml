@@ -2,9 +2,20 @@
 # https://github.com/slackapi/slack-github-action/issues/116
 name: Production Release Slack Notification
 on:
-  push:
-    branches:
-      - chore/add-slack-back
+  workflow_call:
+    inputs:
+      gha_deployment_failure_url:
+        required: false
+        type: string
+        default: ''
+      production_url:
+        required: false
+        type: string
+        default: 'https://flexbase.app'
+      release_title:
+        required: false
+        type: string
+        default: 'flexbase application'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
