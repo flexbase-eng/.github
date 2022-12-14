@@ -1,17 +1,10 @@
+# fun notes around commit messages
+# https://github.com/slackapi/slack-github-action/issues/116
 name: Production Release Slack Notification
 on:
-  workflow_call:
-    inputs:
-      gha_deployment_failure_url:
-        required: true
-        type: string
-      production_url:
-        required: false
-        type: string
-        default: https://www.flexbase.app
-      release_title:
-        required: false
-        type: string
+  push:
+    branches:
+      - chore/add-slack-back
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -28,14 +21,21 @@ jobs:
   prod-notify:
     runs-on: ubuntu-latest
     steps:
-       - name: Get commits
-         uses: octokit/request-action@v2.x
-         id: get_commit_list
-         with:
-           route: GET /repos/{owner}/{repo}/commits
-           owner: ${{ github.repository_owner }}
-           repo: ${{ github.event.repository.name }}
+      - name: Get commits
+        uses: octokit/request-action@v2.x
+        id: get_commit_list
+        with:
+          route: GET /repos/{owner}/{repo}/commits
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }}
       
+      - name: Prepare
+        id: slack-prepare
+        run: |
+          COMMIT_MESSAGE="${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
+          COMMIT_MESSAGE="$(echo "$COMMIT_MESSAGE" | sed -z 's/\n/\\n/g')"
+          echo "::set-output name=commit-message::${COMMIT_MESSAGE}"
+
       - name: Post Success to a Slack channel
         if: ${{ success() }}
         id: slack-success
@@ -48,7 +48,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": ":rocket: ${{ env.RELEASE_TITLE }} has been shipped to production. Commit info and links are below :rocket:"
+                    "text": ":rocket: ${{ env.RELEASE_TITLE }} has been shipped to production. :rocket:"
                   }
                 },
                 {
@@ -65,7 +65,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Description*: ${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
+                    "text": "*Description*: ${{ steps.slack-prepare.outputs.commit-message }}"
                   }
                 },
                 {
