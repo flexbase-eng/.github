@@ -36,7 +36,7 @@ jobs:
         uses: octokit/request-action@v2.x
         id: get_commit_list
         with:
-          route: GET /repos/{owner}/{repo}/commits
+          route: GET /repos/{owner}/{repo}/commits?sha=${{ github.sha }}
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
       
