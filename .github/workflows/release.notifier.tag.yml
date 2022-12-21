@@ -29,25 +29,24 @@ permissions:
   contents: read
 
 jobs:
-  prod-notify:
+  prod-notify-tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Get commits
+      - name: Get Latest Release List
         uses: octokit/request-action@v2.x
-        id: get_commit_list
+        id: get_latest_release
         with:
-          route: GET /repos/{owner}/{repo}/commits?sha=${{ github.sha }}
+          route: GET /repos/{owner}/{repo}/releases/latest
           owner: ${{ github.repository_owner }}
-          repo: ${{ github.event.repository.name }}
+          repo: ${{ github.event.repository.name }} 
       
-      - name: Prepare
+      - name: Prepare Release Info
         id: slack-prepare
         run: |
-          COMMIT_MESSAGE="${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
-          COMMIT_MESSAGE="$(echo ${COMMIT_MESSAGE:0:2800})"
-          COMMIT_MESSAGE="$(echo "$COMMIT_MESSAGE" | sed -z 's/\n/\\n/g; s/"//g;')"
-          echo "commit-message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
-
+          RELEASE_MESSAGE="${{ fromJSON(steps.get_latest_release.outputs.data).body }}"
+          RELEASE_MESSAGE="$(echo ${RELEASE_MESSAGE:0:2800})"
+          RELEASE_MESSAGE="$(echo $RELEASE_MESSAGE | sed -z 's/\n/\\n/g; s/"//g;')"
+          echo "release-message=$RELEASE_MESSAGE" >> $GITHUB_OUTPUT
       - name: Post Success to a Slack channel
         id: slack-success
         uses: slackapi/slack-github-action@v1.19.0
@@ -59,7 +58,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": ":rocket: ${{ env.RELEASE_TITLE }} has been shipped to production. :rocket:"
+                    "text": "Mobile App release ${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }} has been submitted for app review. :rocket:"
                   }
                 },
                 {
@@ -69,21 +68,14 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Author*: ${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.author.name }}"
+                    "text": "*Github Release Page*: <${{ fromJSON(steps.get_latest_release.outputs.data).html_url }}|${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }}>"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Description*: ${{ steps.slack-prepare.outputs.commit-message }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Commit Details*: ${{ fromJSON(steps.get_commit_list.outputs.data)[0].html_url }}"
+                    "text": ${{ toJSON(steps.slack-prepare.outputs.release-message) }}
                   }
                 },
                 {

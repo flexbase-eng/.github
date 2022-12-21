@@ -1,0 +1,15 @@
+name: 'Test the release notification'
+on:
+  push:
+    branches:
+      - main
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+jobs:
+  notify-prod:
+    uses: flexbase-eng/.github/.github/workflows/release.notifier.yml@test/release-notifier
+    with:
+      gha_deployment_failure_url: https://github.com/flexbase-eng/flexbase-web/actions/workflows/deploy-prod.yml
+      release_title: Flexbase Test Notification
+    secrets: inherit
