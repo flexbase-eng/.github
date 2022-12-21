@@ -31,6 +31,7 @@ permissions:
 jobs:
   prod-notify:
     runs-on: ubuntu-latest
+    if: github.event_name != release
     steps:
       - name: Get commits
         uses: octokit/request-action@v2.x
@@ -44,8 +45,9 @@ jobs:
         id: slack-prepare
         run: |
           COMMIT_MESSAGE="${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
-          COMMIT_MESSAGE="$(echo "$COMMIT_MESSAGE" | sed -z 's/\n/\\n/g')"
-          echo "::set-output name=commit-message::${COMMIT_MESSAGE}"
+          COMMIT_MESSAGE="$(echo ${COMMIT_MESSAGE:0:2800})"
+          COMMIT_MESSAGE="$(echo "$COMMIT_MESSAGE" | sed -z 's/\n/\\n/g; s/"//g;')"
+          echo "commit-message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Post Success to a Slack channel
         if: ${{ success() }}
@@ -91,9 +93,31 @@ jobs:
                 }
               ]
             }
-      - name: Post Failure to a Slack channel
-        if: ${{ failure() }}
-        id: slack-failure
+
+  prod-notify-tag:
+    runs-on: ubuntu-latest
+    if: github.event_name == release
+    steps:
+      - name: Get Latest Release List
+        if: ${{ success() }}
+        uses: octokit/request-action@v2.x
+        id: get_latest_release
+        with:
+          route: GET /repos/{owner}/{repo}/releases/latest
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }} 
+      
+      - name: Prepare Release Info
+        id: slack-prepare
+        run: |
+          RELEASE_MESSAGE="${{ fromJSON(steps.get_latest_release.outputs.data).body }}"
+          RELEASE_MESSAGE="$(echo ${RELEASE_MESSAGE:0:2800})"
+          RELEASE_MESSAGE="$(echo $RELEASE_MESSAGE | sed -z 's/\n/\\n/g; s/"//g;')"
+          echo "release-message=$RELEASE_MESSAGE" >> $GITHUB_OUTPUT
+
+      - name: Post Success to a Slack channel
+        if: ${{ success() }}
+        id: slack-success
         uses: slackapi/slack-github-action@v1.19.0
         with:
           payload: |
@@ -103,7 +127,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "There was an issue shipping ${{ github.event.repository.name }} to production."
+                    "text": "Mobile App release ${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }} has been submitted for app review. :rocket:"
                   }
                 },
                 {
@@ -113,8 +137,18 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": <${{ env.FAILURE_URL }}|production deployment logs>"
+                    "text": "*Github Release Page*: <${{ fromJSON(steps.get_latest_release.outputs.data).html_url }}|${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }}>"
                   }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ${{ toJSON(steps.slack-prepare.outputs.release-message) }}
+                  }
+                },
+                {
+                  "type": "divider"
                 }
               ]
             }
