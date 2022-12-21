@@ -1,0 +1,87 @@
+# fun notes around commit messages
+# https://github.com/slackapi/slack-github-action/issues/116
+name: Production Release Slack Notification
+on:
+  workflow_call:
+    inputs:
+      gha_deployment_failure_url:
+        required: false
+        type: string
+        default: ''
+      production_url:
+        required: false
+        type: string
+        default: 'https://flexbase.app'
+      release_title:
+        required: false
+        type: string
+        default: 'flexbase application'
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+  FAILURE_URL: ${{ inputs.gha_deployment_failure_url }}
+  PRODUCTION_URL: ${{ inputs.production_url }}
+  RELEASE_TITLE: ${{ inputs.release_title || github.event.repository.name }}
+
+permissions:
+  contents: read
+
+jobs:
+  prod-notify-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Latest Release List
+        uses: octokit/request-action@v2.x
+        id: get_latest_release
+        with:
+          route: GET /repos/{owner}/{repo}/releases/latest
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }} 
+      
+      - name: Prepare Release Info
+        id: slack-prepare
+        run: |
+          RELEASE_MESSAGE="${{ fromJSON(steps.get_latest_release.outputs.data).body }}"
+          RELEASE_MESSAGE="$(echo ${RELEASE_MESSAGE:0:2800})"
+          RELEASE_MESSAGE="$(echo $RELEASE_MESSAGE | sed -z 's/\n/\\n/g; s/"//g;')"
+          echo "release-message=$RELEASE_MESSAGE" >> $GITHUB_OUTPUT
+      - name: Post Success to a Slack channel
+        id: slack-success
+        uses: slackapi/slack-github-action@v1.19.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Mobile App release ${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }} has been submitted for app review. :rocket:"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Github Release Page*: <${{ fromJSON(steps.get_latest_release.outputs.data).html_url }}|${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }}>"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ${{ toJSON(steps.slack-prepare.outputs.release-message) }}
+                  }
+                },
+                {
+                  "type": "divider"
+                }
+              ]
+            }
+
+      
