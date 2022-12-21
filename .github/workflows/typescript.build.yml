@@ -27,9 +27,9 @@ on:
         type: boolean
         default: false
 env:
-  PACKR_MAJOR_VERSION:
-  PACKR_MINOR_VERSION:
-  PACKR_REVISION:
+  PACKR_MAJOR_VERSION: ${{ inputs.major_version }}
+  PACKR_MINOR_VERSION: ${{ inputs.minor_version }}
+  PACKR_REVISION: ${{ inputs.revision }}
 
 jobs:
   pr-labeler:
@@ -75,6 +75,14 @@ jobs:
         with:
           node-version: latest
           cache: ${{ inputs.package_manager }}
+
+      - name: add github internal package repo access
+        env: 
+          PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=$PACKAGE_TOKEN" > .npmrc
+          echo "@flexbase-eng:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "always-auth=true" >> .npmrc
 
       - name: Create environment variables for yarn commands
         if: inputs.package_manager == 'yarn'
