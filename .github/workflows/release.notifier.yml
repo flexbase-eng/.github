@@ -31,10 +31,10 @@ permissions:
 jobs:
   prod-notify:
     runs-on: ubuntu-latest
-    if: github.event_name != 'release'
     steps:
       - name: Get commits
         uses: octokit/request-action@v2.x
+        if: github.event_name != 'release'
         id: get_commit_list
         with:
           route: GET /repos/{owner}/{repo}/commits?sha=${{ github.sha }}
@@ -43,6 +43,7 @@ jobs:
       
       - name: Prepare
         id: slack-prepare
+        if: github.event_name != 'release'
         run: |
           COMMIT_MESSAGE="${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
           COMMIT_MESSAGE="$(echo ${COMMIT_MESSAGE:0:2800})"
@@ -50,8 +51,8 @@ jobs:
           echo "commit-message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Post Success to a Slack channel
-        if: ${{ success() }}
         id: slack-success
+        if: github.event_name != 'release'
         uses: slackapi/slack-github-action@v1.19.0
         with:
           payload: |
@@ -93,13 +94,9 @@ jobs:
                 }
               ]
             }
-
-  prod-notify-tag:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
-    steps:
+      
       - name: Get Latest Release List
-        if: ${{ success() }}
+        if: github.event_name == 'release'
         uses: octokit/request-action@v2.x
         id: get_latest_release
         with:
@@ -109,6 +106,7 @@ jobs:
       
       - name: Prepare Release Info
         id: slack-prepare
+        if: github.event_name == 'release'
         run: |
           RELEASE_MESSAGE="${{ fromJSON(steps.get_latest_release.outputs.data).body }}"
           RELEASE_MESSAGE="$(echo ${RELEASE_MESSAGE:0:2800})"
@@ -116,7 +114,7 @@ jobs:
           echo "release-message=$RELEASE_MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Post Success to a Slack channel
-        if: ${{ success() }}
+        if: github.event_name == 'release'
         id: slack-success
         uses: slackapi/slack-github-action@v1.19.0
         with:
@@ -152,3 +150,4 @@ jobs:
                 }
               ]
             }
+      
