@@ -34,7 +34,6 @@ jobs:
     steps:
       - name: Get commits
         uses: octokit/request-action@v2.x
-        if: github.event_name != 'release'
         id: get_commit_list
         with:
           route: GET /repos/{owner}/{repo}/commits?sha=${{ github.sha }}
@@ -43,7 +42,6 @@ jobs:
       
       - name: Prepare
         id: slack-prepare
-        if: github.event_name != 'release'
         run: |
           COMMIT_MESSAGE="${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
           COMMIT_MESSAGE="$(echo ${COMMIT_MESSAGE:0:2800})"
@@ -52,7 +50,6 @@ jobs:
 
       - name: Post Success to a Slack channel
         id: slack-success
-        if: github.event_name != 'release'
         uses: slackapi/slack-github-action@v1.19.0
         with:
           payload: |
@@ -87,62 +84,6 @@ jobs:
                   "text": {
                     "type": "mrkdwn",
                     "text": "*Commit Details*: ${{ fromJSON(steps.get_commit_list.outputs.data)[0].html_url }}"
-                  }
-                },
-                {
-                  "type": "divider"
-                }
-              ]
-            }
-      
-      - name: Get Latest Release List
-        if: github.event_name == 'release'
-        uses: octokit/request-action@v2.x
-        id: get_latest_release
-        with:
-          route: GET /repos/{owner}/{repo}/releases/latest
-          owner: ${{ github.repository_owner }}
-          repo: ${{ github.event.repository.name }} 
-      
-      - name: Prepare Release Info
-        id: slack-prepare
-        if: github.event_name == 'release'
-        run: |
-          RELEASE_MESSAGE="${{ fromJSON(steps.get_latest_release.outputs.data).body }}"
-          RELEASE_MESSAGE="$(echo ${RELEASE_MESSAGE:0:2800})"
-          RELEASE_MESSAGE="$(echo $RELEASE_MESSAGE | sed -z 's/\n/\\n/g; s/"//g;')"
-          echo "release-message=$RELEASE_MESSAGE" >> $GITHUB_OUTPUT
-
-      - name: Post Success to a Slack channel
-        if: github.event_name == 'release'
-        id: slack-success
-        uses: slackapi/slack-github-action@v1.19.0
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "Mobile App release ${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }} has been submitted for app review. :rocket:"
-                  }
-                },
-                {
-                  "type": "divider"
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Github Release Page*: <${{ fromJSON(steps.get_latest_release.outputs.data).html_url }}|${{ fromJSON(steps.get_latest_release.outputs.data).tag_name }}>"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ${{ toJSON(steps.slack-prepare.outputs.release-message) }}
                   }
                 },
                 {
