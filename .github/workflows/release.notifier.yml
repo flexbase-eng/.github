@@ -34,6 +34,7 @@ jobs:
     steps:
       - name: Get commits
         uses: octokit/request-action@v2.x
+        if: github.event_name != 'release'
         id: get_commit_list
         with:
           route: GET /repos/{owner}/{repo}/commits?sha=${{ github.sha }}
@@ -42,6 +43,7 @@ jobs:
       
       - name: Prepare
         id: slack-prepare
+        if: github.event_name != 'release'
         run: |
           COMMIT_MESSAGE="${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
           COMMIT_MESSAGE="$(echo ${COMMIT_MESSAGE:0:2800})"
@@ -148,4 +150,5 @@ jobs:
                 }
               ]
             }
+
       

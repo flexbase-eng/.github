@@ -8,7 +8,6 @@ env:
   SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 jobs:
   notify-prod:
-    needs: deploy-prod
     uses: flexbase-eng/.github/.github/workflows/release.notifier.yml@test/release-notifier
     with:
       gha_deployment_failure_url: https://github.com/flexbase-eng/flexbase-web/actions/workflows/deploy-prod.yml
