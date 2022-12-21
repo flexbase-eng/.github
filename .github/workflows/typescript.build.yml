@@ -83,7 +83,6 @@ jobs:
           echo "//npm.pkg.github.com/:_authToken=$PACKAGE_TOKEN" > .npmrc
           echo "@flexbase-eng:registry=https://npm.pkg.github.com" >> .npmrc
           echo "always-auth=true" >> .npmrc
-        working-directory: ./sdk-typescript
 
       - name: Create environment variables for yarn commands
         if: inputs.package_manager == 'yarn'
