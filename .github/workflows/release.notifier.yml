@@ -45,7 +45,7 @@ jobs:
         run: |
           COMMIT_MESSAGE="${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
           COMMIT_MESSAGE="$(echo ${COMMIT_MESSAGE:0:2800})"
-          COMMIT_MESSAGE="$(echo "$COMMIT_MESSAGE" | sed -z 's/\n/\\n/g; s/"//g; s/`/\`/g; s/-/\-/g;')"
+          COMMIT_MESSAGE="$(echo "$COMMIT_MESSAGE" | sed -z 's/\n/\\n/g; s/"//g; s/`/\`/g; s/-/\-/g; s/./\./g;')"
           echo "commit-message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Post Success to a Slack channel
