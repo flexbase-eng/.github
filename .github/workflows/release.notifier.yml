@@ -75,7 +75,7 @@ jobs:
                 {
                   "type": "section",
                   "text": {
-                    "type": "mrkdwn",
+                    "type": "plain_text",
                     "text": "*Description*: ${{ steps.slack-prepare.outputs.commit-message }}"
                   }
                 },
