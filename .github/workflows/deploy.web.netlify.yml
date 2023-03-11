@@ -30,8 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - if: inputs.is_prod == true
-        env:
-          NETLIFY_PROD: --prod
+        run: echo "NETLIFY_PROD=--prod" >> $GITHUB_ENV
 
       - name: Retrieve build artifacts
         uses: actions/download-artifact@v3
