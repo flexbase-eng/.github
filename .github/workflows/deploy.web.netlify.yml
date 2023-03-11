@@ -35,4 +35,4 @@ jobs:
         uses: netlify/actions/cli@master
         with:
           args: deploy --dir=${{ inputs.build_artifact_download_path }} ${{ env.NETLIFY_PROD }}
-        timeout-minutes: 1
+        timeout-minutes: 3
