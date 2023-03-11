@@ -1,8 +1,0 @@
-{
-    "name": "Artifact Cleanup",
-    "description": "Flexbase auto artifact clean up",
-    "iconName": "artifact.cleanup",
-    "categories": [
-        "Artifacts"
-    ]
-}
