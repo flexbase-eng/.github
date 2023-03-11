@@ -2,9 +2,6 @@ name: Netlify Deploy
 on:
   workflow_call:
     inputs:
-      netlify_site_id:
-        required: true
-        type: string
       build_artifact_download:
         required: false
         type: string
@@ -12,10 +9,6 @@ on:
       build_artifact_download_path:
         required: true
         type: string
-      package_manager:
-        required: false
-        type: string
-        default: yarn
       is_prod:
         required: false
         type: boolean
@@ -23,7 +16,7 @@ on:
 env:
   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  NETLIFY_SITE_ID: ${{ inputs.netlify_site_id}}
+  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
 jobs:
   deploy:
