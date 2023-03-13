@@ -37,5 +37,5 @@ jobs:
         with:
           args: >
             -Dsonar.organization=${{ env.SONAR_ORG }}
-            -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
             -Dsonar.javascript.lcov.reportPaths=${{ inputs.coverage_artifact_folder }}
