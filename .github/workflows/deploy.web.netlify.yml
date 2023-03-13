@@ -23,8 +23,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     outputs:
-      deployUrl: ${{ steps.netlify_deploy.outputs.deploy-url }}
-      prodUrl: ${{ steps.netlify_deploy.outputs.url }}
+      deployUrl: ${{ steps.netlify_deploy.outputs.netlify_output.deploy-url }}
+      prodUrl: ${{ steps.netlify_deploy.outputs.netlify_output.url }}
     steps:
       - name: Is production deployment
         if: inputs.is_prod == true
@@ -52,5 +52,5 @@ jobs:
               issue_number: ${{ github.event.number }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: ':cloud: Deployed to ${{ steps.netlify_deploy.outputs.deploy-url }}'
+              body: ':cloud: Deployed to ${{ steps.netlify_deploy.outputs.netlify_output.deploy-url }}'
             })
