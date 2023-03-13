@@ -107,6 +107,6 @@ jobs:
         if: ${{ inputs.coverage_artifact_folder != ''}}
         uses: actions/upload-artifact@v3
         with:
-          name: $${{ inputs.coverage_artifact_name }}
-          path: $${{ inputs.coverage_artifact_folder }}
+          name: ${{ inputs.coverage_artifact_name }}
+          path: ${{ inputs.coverage_artifact_folder }}
           retention-days: 1
