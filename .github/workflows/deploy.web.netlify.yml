@@ -23,7 +23,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.deploy-to-netlify.outputs.deploy-url }}
+      deployUrl: ${{ steps.deploy-to-netlify.outputs.deploy-url }}
+      prodUrl: ${{ steps.deploy-to-netlify.outputs.url }}
     steps:
       - name: Is production deployment
         if: inputs.is_prod == true
@@ -40,3 +41,11 @@ jobs:
         with:
           args: deploy --dir=${{ inputs.build_artifact_download_path }} ${{ env.NETLIFY_PROD }}
         timeout-minutes: 3
+
+  output:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo Deployed to ${{ jobs.deploy.outputs.deployUrl }}
+          echo Production url ${{ jobs.deploy.outputs.prodUrl }}
