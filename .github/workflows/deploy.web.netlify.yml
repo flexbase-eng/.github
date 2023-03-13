@@ -7,8 +7,9 @@ on:
         type: string
         default: dist
       build_artifact_download_path:
-        required: true
+        required: false
         type: string
+        default: dist
       is_prod:
         required: false
         type: boolean
