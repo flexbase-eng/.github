@@ -23,8 +23,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     outputs:
-      deployUrl: ${{ steps.deploy-to-netlify.outputs.deploy-url }}
-      prodUrl: ${{ steps.deploy-to-netlify.outputs.url }}
+      deployUrl: ${{ steps.netlify_deploy.outputs.deploy-url }}
+      prodUrl: ${{ steps.netlify_deploy.outputs.url }}
     steps:
       - name: Is production deployment
         if: inputs.is_prod == true
@@ -37,6 +37,7 @@ jobs:
           path: ${{ inputs.build_artifact_download_path }}
 
       - name: Deploy to Netlify
+        id: netlify_deploy
         uses: flexbase-eng/actions/netlify-cli@main
         with:
           args: deploy --dir=${{ inputs.build_artifact_download_path }} ${{ env.NETLIFY_PROD }}
@@ -51,5 +52,5 @@ jobs:
               issue_number: ${{ github.event.number }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: ':upload-cloud: Deployed to ${{ steps.deploy-to-netlify.outputs.deploy-url }}'
+              body: ':cloud: Deployed to ${{ steps.netlify_deploy.outputs.deploy-url }}'
             })
