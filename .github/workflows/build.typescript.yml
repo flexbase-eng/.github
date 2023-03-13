@@ -40,22 +40,20 @@ on:
         default: 'code-coverage-report'
 
 jobs:
-  pr-labeler:
-    name: 'PR Labeler'
+  labeler:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     permissions:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
       - uses: TimonVS/pr-labeler-action@v4
         with:
           configuration-path: .github/pr-labeler.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  initialize:
+  compile:
     runs-on: ubuntu-latest
     steps:
       - name: Create environment variables for yarn commands
@@ -74,11 +72,13 @@ jobs:
           echo "CLI_LINT=npm run ${{ inputs.lint_command }}" >> $GITHUB_ENV
           echo "CLI_TEST=npm run ${{ inputs.test_command }}" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      - name: Node Setup
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.node_version }}
           cache: ${{ inputs.package_manager }}
@@ -86,12 +86,14 @@ jobs:
       - name: Install dependencies
         run: ${{ env.CLI_INSTALL }}
 
-  compile:
-    needs: initialize
-    runs-on: ubuntu-latest
-    steps:
       - name: Compile
         run: ${{ env.CLI_BUILD }}
+
+      - name: Run tests
+        run: ${{ env.CLI_TEST }}
+
+      - name: Lint
+        run: ${{ env.CLI_LINT }}
 
       - name: Upload Artifacts
         if: ${{ inputs.artifact_folder != ''}}
@@ -101,13 +103,6 @@ jobs:
           path: ${{ inputs.artifact_folder }}
           retention-days: 1
 
-  test:
-    needs: compile
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run tests
-        run: ${{ env.CLI_TEST }}
-
       - name: Upload Coverage Artifacts
         if: ${{ inputs.coverage_artifact_folder != ''}}
         uses: actions/upload-artifact@v3
@@ -115,10 +110,3 @@ jobs:
           name: $${{ inputs.coverage_artifact_name }}
           path: $${{ inputs.coverage_artifact_folder }}
           retention-days: 1
-
-  lint:
-    needs: compile
-    runs-on: ubuntu-latest
-    steps:
-      - name: Lint
-        run: ${{ env.CLI_LINT }}
