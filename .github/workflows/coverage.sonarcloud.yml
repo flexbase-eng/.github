@@ -29,8 +29,8 @@ jobs:
       - name: Retrieve coverage artifacts
         uses: actions/download-artifact@v3
         with:
-          name: $${{ inputs.coverage_artifact_name }}
-          path: $${{ inputs.coverage_artifact_folder }}
+          name: ${{ inputs.coverage_artifact_name }}
+          path: ${{ inputs.coverage_artifact_folder }}
 
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
@@ -38,4 +38,4 @@ jobs:
           args: >
             -Dsonar.organization=${{ env.SONAR_ORG }}
             -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
-            -Dsonar.javascript.lcov.reportPaths=$${{ inputs.coverage_artifact_folder }}
+            -Dsonar.javascript.lcov.reportPaths=${{ inputs.coverage_artifact_folder }}
