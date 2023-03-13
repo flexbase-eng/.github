@@ -77,7 +77,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Node Setup
+      - name: Setup Node ${{ inputs.node_version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.node_version }}
