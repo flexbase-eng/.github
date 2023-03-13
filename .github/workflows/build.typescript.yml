@@ -1,0 +1,124 @@
+name: Build
+on:
+  workflow_call:
+    inputs:
+      artifact_folder:
+        required: false
+        type: string
+        default: 'dist'
+      artifact_name:
+        required: false
+        type: string
+        default: 'dist'
+      package_manager:
+        required: false
+        type: string
+        default: 'yarn'
+      build_command:
+        required: false
+        type: string
+        default: 'build'
+      lint_command:
+        required: false
+        type: string
+        default: 'lint'
+      test_command:
+        required: false
+        type: string
+        default: 'test'
+      node_version:
+        required: false
+        type: string
+        default: 'latest'
+      coverage_artifact_folder:
+        required: false
+        type: string
+        default: 'coverage/lcov.info'
+      coverage_artifact_name:
+        required: false
+        type: string
+        default: 'code-coverage-report'
+
+jobs:
+  pr-labeler:
+    name: 'PR Labeler'
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: TimonVS/pr-labeler-action@v4
+        with:
+          configuration-path: .github/pr-labeler.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  initialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create environment variables for yarn commands
+        if: inputs.package_manager == 'yarn'
+        run: |
+          echo "CLI_INSTALL=yarn install --frozen-lockfile" >> $GITHUB_ENV
+          echo "CLI_BUILD=yarn ${{ build_command }}" >> $GITHUB_ENV
+          echo "CLI_LINT=yarn ${{ lint_command }}" >> $GITHUB_ENV
+          echo "CLI_TEST=yarn ${{ test_command }}" >> $GITHUB_ENV
+
+      - name: Create environment variables for npm commands
+        if: inputs.package_manager == 'npm'
+        run: |
+          echo "CLI_INSTALL=npm ci" >> $GITHUB_ENV
+          echo "CLI_BUILD=npm run ${{ build_command }}" >> $GITHUB_ENV
+          echo "CLI_LINT=npm run ${{ lint_command }}" >> $GITHUB_ENV
+          echo "CLI_TEST=npm run ${{ test_command }}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
+
+      - name: Install dependencies
+        run: ${{ env.CLI_INSTALL }}
+
+  compile:
+    needs: initialize
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compile
+        run: ${{ env.CLI_BUILD }}
+
+      - name: Upload Artifacts
+        if: ${{ inputs.artifact_folder != ''}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ${{ inputs.artifact_folder }}
+          retention-days: 1
+
+  test:
+    needs: compile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: ${{ env.CLI_TEST }}
+
+      - name: Upload Coverage Artifacts
+        if: ${{ inputs.coverage_artifact_folder != ''}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: $${{ inputs.coverage_artifact_name }}
+          path: $${{ inputs.coverage_artifact_folder }}
+          retention-days: 1
+
+  lint:
+    needs: compile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint
+        run: ${{ env.CLI_LINT }}
