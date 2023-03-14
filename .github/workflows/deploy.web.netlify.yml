@@ -43,7 +43,8 @@ jobs:
           args: deploy --dir=${{ inputs.build_artifact_download_path }} ${{ env.NETLIFY_PROD }}
         timeout-minutes: 2
 
-      - name: Comment on PRa
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@main
         env:
           DEPLOY_URL: ${{ steps.netlify_deploy.outputs.deploy_url }}
