@@ -1,0 +1,88 @@
+# fun notes around commit messages
+# https://github.com/slackapi/slack-github-action/issues/116
+name: Slack Notification
+on:
+  workflow_call:
+    inputs:
+      production_url:
+        required: false
+        type: string
+        default: 'https://flexbase.app'
+      release_title:
+        required: false
+        type: string
+        default: ${{ github.event.repository.name }}
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+  PRODUCTION_URL: ${{ inputs.production_url }}
+  RELEASE_TITLE: ${{ inputs.release_title }}
+
+permissions:
+  contents: read
+
+jobs:
+  prod-notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get commits
+        uses: octokit/request-action@v2.x
+        id: get_commit_list
+        with:
+          route: GET /repos/{owner}/{repo}/commits?sha=${{ github.sha }}
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }}
+
+      - name: Prepare
+        id: slack-prepare
+        run: |
+          COMMIT_MESSAGE="${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
+          COMMIT_MESSAGE="$(echo ${COMMIT_MESSAGE:0:2800})"
+          COMMIT_MESSAGE="$(echo "$COMMIT_MESSAGE" | sed -z 's/\r/\\r/g; s/\n/\\n/g; s/"//g; s/`//g; s/-/\-/g;')"
+          echo "commit-message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+
+      - name: Post to a Slack channel
+        id: slack-success
+        uses: slackapi/slack-github-action@main
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":rocket: ${{ env.RELEASE_TITLE }} has been shipped to production. :rocket:"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Author*: ${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.author.name }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Description*: ${{ steps.slack-prepare.outputs.commit-message }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Commit Details*: ${{ fromJSON(steps.get_commit_list.outputs.data)[0].html_url }}"
+                  }
+                },
+                {
+                  "type": "divider"
+                }
+              ]
+            }
