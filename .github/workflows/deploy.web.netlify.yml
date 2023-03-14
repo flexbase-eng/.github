@@ -43,6 +43,9 @@ jobs:
           args: deploy --dir=${{ inputs.build_artifact_download_path }} ${{ env.NETLIFY_PROD }}
         timeout-minutes: 2
 
+      - name: debugging
+        run: echo ${{  steps.netlify_deploy.outputs.* }}
+
       - name: Comment on PRa
         uses: actions/github-script@main
         env:
