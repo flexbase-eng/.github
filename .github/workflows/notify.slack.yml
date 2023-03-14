@@ -5,9 +5,8 @@ on:
   workflow_call:
     inputs:
       production_url:
-        required: false
+        required: true
         type: string
-        default: 'https://flexbase.app'
       release_title:
         required: false
         type: string
