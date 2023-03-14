@@ -23,8 +23,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     outputs:
-      deployUrl: ${{ steps.netlify_deploy.outputs.netlify_json.deploy-url }}
-      prodUrl: ${{ steps.netlify_deploy.outputs.netlify_json.url }}
+      deployUrl: ${{ steps.netlify_deploy.outputs.netlify_output.deploy_url }}
+      prodUrl: ${{ steps.netlify_deploy.outputs.netlify_output.url }}
     steps:
       - name: Is production deployment
         if: inputs.is_prod == true
@@ -41,7 +41,7 @@ jobs:
         uses: flexbase-eng/actions/netlify-cli@main
         with:
           args: deploy --dir=${{ inputs.build_artifact_download_path }} ${{ env.NETLIFY_PROD }}
-        timeout-minutes: 3
+        timeout-minutes: 2
 
       - name: Comment on PRa
         uses: actions/github-script@main
@@ -52,5 +52,5 @@ jobs:
               issue_number: ${{ github.event.number }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: ':cloud: Deployed to ${{ steps.netlify_deploy.outputs.netlify_json.deploy-url }}'
+              body: ':cloud: Deployed to ${{ steps.netlify_deploy.outputs.netlify_output.deploy_url }}'
             })
