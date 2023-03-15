@@ -44,7 +44,7 @@ jobs:
 
       - name: Post to a Slack channel
         id: slack-success
-        uses: slackapi/slack-github-action@main
+        uses: slackapi/slack-github-action@v1.23.0
         with:
           payload: |
             {
