@@ -2,11 +2,11 @@ name: Npm Deploy
 on:
   workflow_call:
     inputs:
-      build_artifact_download:
+      build_artifact_folder:
         required: false
         type: string
         default: dist
-      build_artifact_download_path:
+      build_artifact_name:
         required: false
         type: string
         default: dist
@@ -49,8 +49,8 @@ jobs:
       - name: Retrieve build artifacts
         uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.build_artifact_download }}
-          path: ${{ inputs.build_artifact_download_path }}
+          name: ${{ inputs.build_artifact_name }}
+          path: ${{ inputs.build_artifact_folder }}
 
       - name: Setup Node ${{ inputs.node_version }} with cache
         uses: actions/setup-node@v3

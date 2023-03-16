@@ -2,7 +2,7 @@ name: Build
 on:
   workflow_call:
     inputs:
-      build_artifact_download:
+      build_artifact_folder:
         required: false
         type: string
         default: 'dist'
@@ -114,11 +114,11 @@ jobs:
         run: ${{ env.CLI_PACKR }}
 
       - name: Upload Build Artifacts
-        if: ${{ inputs.build_artifact_download != ''}}
+        if: ${{ inputs.build_artifact_folder != ''}}
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.build_artifact_name }}
-          path: ${{ inputs.build_artifact_download }}
+          path: ${{ inputs.build_artifact_folder }}
           retention-days: 1
           if-no-files-found: error
 
