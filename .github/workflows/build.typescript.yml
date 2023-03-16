@@ -120,6 +120,7 @@ jobs:
           name: ${{ inputs.artifact_name }}
           path: ${{ inputs.artifact_folder }}
           retention-days: 1
+          if-no-files-found: error
 
       - name: Upload Coverage Artifacts
         if: ${{ inputs.coverage_artifact_folder != ''}}
