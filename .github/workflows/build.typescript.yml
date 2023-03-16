@@ -67,7 +67,7 @@ jobs:
           echo "CLI_BUILD=yarn ${{ inputs.build_command }}" >> $GITHUB_ENV
           echo "CLI_LINT=yarn ${{ inputs.lint_command }}" >> $GITHUB_ENV
           echo "CLI_TEST=yarn ${{ inputs.test_command }}" >> $GITHUB_ENV
-          echo "CLI_PACR=yarn ${{ inputs.packr_command }}" >> $GITHUB_ENV
+          echo "CLI_PACKR=yarn ${{ inputs.packr_command }}" >> $GITHUB_ENV
 
       - name: Create environment variables for npm commands
         if: inputs.package_manager == 'npm'
@@ -76,7 +76,7 @@ jobs:
           echo "CLI_BUILD=npm run ${{ inputs.build_command }}" >> $GITHUB_ENV
           echo "CLI_LINT=npm run ${{ inputs.lint_command }}" >> $GITHUB_ENV
           echo "CLI_TEST=npm run ${{ inputs.test_command }}" >> $GITHUB_ENV
-          echo "CLI_PACR=npm run ${{ inputs.packr_command }}" >> $GITHUB_ENV
+          echo "CLI_PACKR=npm run ${{ inputs.packr_command }}" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v3
