@@ -1,0 +1,77 @@
+name: Npm Deploy
+on:
+  workflow_call:
+    inputs:
+      build_artifact_download:
+        required: false
+        type: string
+        default: dist
+      build_artifact_download_path:
+        required: false
+        type: string
+        default: dist
+      tag:
+        required: false
+        type: string
+        default: latest
+      package_manager:
+        required: false
+        type: string
+        default: yarn
+      package_visibility:
+        required: false
+        type: string
+        default: public
+      node_version:
+        required: false
+        type: string
+        default: 'latest'
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create environment variables for yarn commands
+        if: inputs.package_manager == 'yarn'
+        run: |
+          echo "CLI_INSTALL=yarn install --frozen-lockfile" >> $GITHUB_ENV
+          echo "CLI_PUBLISH=yarn publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}" >> $GITHUB_ENV
+
+      - name: Create environment variables for npm commands
+        if: inputs.package_manager == 'npm'
+        run: |
+          echo "CLI_INSTALL=npm ci" >> $GITHUB_ENV
+          echo "CLI_PUBLISH=npm publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}" >> $GITHUB_ENV
+
+      - name: Retrieve build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.build_artifact_download }}
+          path: ${{ inputs.build_artifact_download_path }}
+
+      - name: Setup Node ${{ inputs.node_version }} with cache
+        uses: actions/setup-node@v3
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          always-auth: true
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
+
+        # reference: https://stackoverflow.com/questions/54310050/how-to-version-build-artifacts-using-github-actions
+      - name: beta - version value from package.json
+        if: inputs.tag == 'beta'
+        run: |
+          npm i -g json
+          json -I -f package.json -e "this.version=\"$(json -f package.json | json version)-beta.${{ github.run_number }}\""
+
+      - name: Install dependencies
+        run: ${{ env.CLI_INSTALL }}
+
+      - name: Update semantic version
+        run: npx semantic-release
+
+      - name: Publish
+        run: ${{ env.CLI_PUBLISH }}
