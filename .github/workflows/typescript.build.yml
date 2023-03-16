@@ -9,7 +9,6 @@ on:
         required: false
         type: boolean
         default: true
-        deprecationMessage: 'use build.typescript.yml instead'
       major_version:
         required: false
         type: string
