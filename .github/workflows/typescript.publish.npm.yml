@@ -14,6 +14,7 @@ on:
         required: false
         type: string
         default: yarn
+        deprecationMessage: 'use deploy.npm.yml instead'
       package_visibility:
         required: false
         type: string

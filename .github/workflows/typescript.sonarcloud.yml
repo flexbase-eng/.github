@@ -5,6 +5,7 @@ on:
       project_key:
         required: true
         type: string
+        deprecationMessage: 'use coverage.sonarcloud.yml instead'
     secrets:
       SONAR_TOKEN:
         required: true
