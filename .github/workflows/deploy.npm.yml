@@ -70,11 +70,5 @@ jobs:
       - name: Install dependencies
         run: ${{ env.CLI_INSTALL }}
 
-      - name: Update semantic version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-        run: npx semantic-release
-
       - name: Publish
         run: ${{ env.CLI_PUBLISH }}

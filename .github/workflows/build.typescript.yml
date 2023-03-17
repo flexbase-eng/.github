@@ -109,6 +109,12 @@ jobs:
       - name: Lint
         run: ${{ env.CLI_LINT }}
 
+      - name: Update semantic version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+        run: npx semantic-release
+
       - name: Packr
         if: ${{ inputs.packr_command != '' }}
         run: ${{ env.CLI_PACKR }}
