@@ -26,6 +26,10 @@ on:
         required: false
         type: string
         default: 'test'
+      version_command:
+        required: false
+        type: string
+        default: 'semantic-release'
       node_version:
         required: false
         type: string
@@ -68,6 +72,7 @@ jobs:
           echo "CLI_LINT=yarn ${{ inputs.lint_command }}" >> $GITHUB_ENV
           echo "CLI_TEST=yarn ${{ inputs.test_command }}" >> $GITHUB_ENV
           echo "CLI_PACKR=yarn ${{ inputs.packr_command }}" >> $GITHUB_ENV
+          echo "CLI_VERSION=yarn ${{ inputs.version_command }}" >> $GITHUB_ENV
 
       - name: Create environment variables for npm commands
         if: inputs.package_manager == 'npm'
@@ -77,6 +82,7 @@ jobs:
           echo "CLI_LINT=npm run ${{ inputs.lint_command }}" >> $GITHUB_ENV
           echo "CLI_TEST=npm run ${{ inputs.test_command }}" >> $GITHUB_ENV
           echo "CLI_PACKR=npm run ${{ inputs.packr_command }}" >> $GITHUB_ENV
+          echo "CLI_VERSION=npm run ${{ inputs.version_command }}" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -113,7 +119,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-        run: npx semantic-release
+        run: ${{ env.CLI_VERSION }}
 
       - name: Packr
         if: ${{ inputs.packr_command != '' }}
