@@ -9,7 +9,7 @@ on:
       coverage_artifact_folder:
         required: false
         type: string
-        default: 'coverage/lcov.info'
+        default: 'coverage'
       coverage_artifact_name:
         required: false
         type: string
