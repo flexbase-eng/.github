@@ -14,6 +14,10 @@ on:
         required: false
         type: string
         default: 'code-coverage-report'
+      js_report_path:
+        required: false
+        type: string
+        default: 'coverage/lcov.info'
 
 env:
   SONAR_ORG: flexbase
@@ -38,4 +42,4 @@ jobs:
           args: >
             -Dsonar.organization=${{ env.SONAR_ORG }}
             -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-            -Dsonar.javascript.lcov.reportPaths=${{ inputs.coverage_artifact_folder }}
+            -Dsonar.javascript.lcov.reportPaths=${{ inputs.js_report_path }}

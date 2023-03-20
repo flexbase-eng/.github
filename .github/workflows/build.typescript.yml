@@ -41,7 +41,7 @@ on:
       coverage_artifact_folder:
         required: false
         type: string
-        default: 'coverage'
+        default: 'coverage/lcov.info'
       coverage_artifact_name:
         required: false
         type: string
