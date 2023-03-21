@@ -30,6 +30,12 @@ jobs:
     name: Sonarcloud Analysis
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
       - name: Retrieve coverage artifacts
         uses: actions/download-artifact@v3
         with:
