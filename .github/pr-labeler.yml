@@ -1,3 +1,4 @@
+major: ['major/*', 'major-*', 'breaking/*', 'breaking-*']
 feature: ['feature/*', 'feat/*', 'feat-*', 'feature-*']
 enhancement: ['enhancement/*', 'enhancement-*']
 fix: ['fix/*', 'fix-*']
