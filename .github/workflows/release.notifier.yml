@@ -16,6 +16,10 @@ on:
         required: false
         type: string
         default: 'flexbase application'
+      release_env: 
+        required: false
+        type: string
+        default: 'production'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -24,6 +28,7 @@ env:
   FAILURE_URL: ${{ inputs.gha_deployment_failure_url }}
   PRODUCTION_URL: ${{ inputs.production_url }}
   RELEASE_TITLE: ${{ inputs.release_title || github.event.repository.name }}
+  RELEASE_ENV: ${{ inputs.release_env }}
 
 permissions:
   contents: read
@@ -59,7 +64,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": ":rocket: ${{ env.RELEASE_TITLE }} has been shipped to production. :rocket:"
+                    "text": ":rocket: ${{ env.RELEASE_TITLE }} has been shipped to ${{ env.RELEASE_ENV }}. :rocket:"
                   }
                 },
                 {
