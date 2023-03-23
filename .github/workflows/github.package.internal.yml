@@ -1,0 +1,19 @@
+name: Set up Flexbase Github Internal Packages
+on:
+  workflow_call:
+
+env:
+  PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+
+jobs:
+  set-internal-packages:
+    runs-on: ubuntu-latest
+    steps:
+      # pull down compiled build artifact to build_artifact_download_path locally
+      - name: set up flexbase internal packages
+        env: 
+          PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=$PACKAGE_TOKEN" > .npmrc
+          echo "@flexbase-eng:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "always-auth=true" >> .npmrc
