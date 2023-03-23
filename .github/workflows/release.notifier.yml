@@ -20,10 +20,6 @@ on:
         required: false
         type: string
         default: 'production'
-      release_type: 
-        required: false
-        type: string
-        default: 'commit'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
