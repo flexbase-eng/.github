@@ -117,9 +117,9 @@ jobs:
         run: ${{ env.CLI_LINT }}
 
       - name: Update semantic version
+        permissions: read-all
         env:
           GITHUB_TOKEN: ${{ secrets.GHA_PAT || secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
         run: ${{ env.CLI_VERSION }}
 
       - name: Packr
