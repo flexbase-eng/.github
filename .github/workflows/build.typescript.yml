@@ -118,7 +118,7 @@ jobs:
 
       - name: Update semantic version
         env:
-          GITHUB_TOKEN: ${{ secrets.GHA_PAT || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GHA_PAT_PRIVATE || secrets.GHA_PAT || secrets.GITHUB_TOKEN }}
         run: ${{ env.CLI_VERSION }}
 
       - name: Packr
