@@ -38,7 +38,7 @@ jobs:
         id: cache
         uses: actions/cache/restore@v3
         with:
-          path: .
+          path: ./*
           key: build-cache-${{ github.sha }}
 
       - name: Check cache hit

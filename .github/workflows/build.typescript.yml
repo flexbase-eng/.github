@@ -120,7 +120,7 @@ jobs:
       - name: Upload build cache
         uses: actions/cache@v3
         with:
-          path: .
+          path: ./*
           key: build-cache-${{ github.sha }}
 
       - name: Run unit tests
