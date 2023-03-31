@@ -33,6 +33,8 @@ env:
 jobs:
   initialize:
     runs-on: ubuntu-latest
+    outputs:
+      CYPRESS_BIN_PATH: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH }}
     steps:
       # - name: Retrieve build cache
       #   id: cache
@@ -51,6 +53,10 @@ jobs:
           echo "CLI_TEST_UNIT=npm run ${{ inputs.test_unit_command }}" >> $GITHUB_ENV
           echo "CLI_TEST_E2E=npm run ${{ inputs.test_e2e_command }}" >> $GITHUB_ENV
           echo "CLI_TEST_COMPONENT=npm run ${{ inputs.test_component_command }}" >> $GITHUB_ENV
+
+      - name: Get cypress cache directory path
+        id: cypress-cache-dir
+        run: echo "CYPRESS_BIN_PATH=$(npx cypress cache path)" >> $GITHUB_OUTPUT
 
   unit:
     name: Unit tests
@@ -86,14 +92,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Retrieve build cache
-        id: cache
+        id: build-cache
         uses: actions/cache/restore@v3
         with:
           path: ./*
           key: build-cache-${{ github.sha }}
 
+      - name: Retrieve cypress binary cache
+        id: cypress-cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ needs.initialize.outputs.CYPRESS_BIN_PATH }}
+          key: cypress-${{ runner.os }}
+
       - name: Check cache hit
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.build-cache.outputs.cache-hit != 'true' || steps.cypress-cache.outputs.cache-hit != 'true'
         run: exit 1
 
       - run: ${{ env.CLI_TEST_COMPONENT }}
@@ -105,19 +118,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Retrieve build cache
-        id: cache
+        id: build-cache
         uses: actions/cache/restore@v3
         with:
           path: ./*
           key: build-cache-${{ github.sha }}
 
-      - name: Check cache hit
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: exit 1
-
-      - uses: cypress-io/github-action@v5
+      - name: Retrieve cypress binary cache
+        id: cypress-cache
+        uses: actions/cache/restore@v3
         with:
-          browser: chrome
+          path: ${{ needs.initialize.outputs.CYPRESS_BIN_PATH }}
+          key: cypress-${{ runner.os }}
+
+      - name: Check cache hit
+        if: steps.build-cache.outputs.cache-hit != 'true' || steps.cypress-cache.outputs.cache-hit != 'true'
+        run: exit 1
 
       #- run: ${{ env.CLI_TEST_E2E }}
 

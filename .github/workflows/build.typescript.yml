@@ -117,11 +117,22 @@ jobs:
       - name: Lint
         run: ${{ env.CLI_LINT }}
 
+      - name: Get cypress cache directory path
+        id: cypress-cache-dir
+        run: echo "CYPRESS_BIN_PATH=$(npx cypress cache path)" >> $GITHUB_OUTPUT
+
       - name: Upload build cache
         uses: actions/cache@v3
         with:
           path: ./*
           key: build-cache-${{ github.sha }}
+
+      - name: Upload cypress binary cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH }}
+          key: cypress-${{ runner.os }}
+          restore-keys: cypress-${{ runner.os }}
 
       - name: Run unit tests
         run: ${{ env.CLI_TEST_UNIT }}
