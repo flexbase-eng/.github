@@ -26,9 +26,9 @@ on:
         default: 'code-coverage-report'
 
 env:
-  CLI_TEST_UNIT:
-  CLI_TEST_E2E:
-  CLI_TEST_COMPONENT:
+  CLI_TEST_UNIT: yarn ${{ inputs.test_unit_command }}
+  CLI_TEST_E2E: yarn ${{ inputs.test_e2e_command }}
+  CLI_TEST_COMPONENT: yarn ${{ inputs.test_component_command }}
 
 jobs:
   initialize:
@@ -44,13 +44,6 @@ jobs:
       - name: Check cache hit
         if: steps.cache.outputs.cache-hit != 'true'
         run: exit 1
-
-      - name: Create environment variables for yarn commands
-        if: inputs.package_manager == 'yarn'
-        run: |
-          echo "CLI_TEST_UNIT=yarn ${{ inputs.test_unit_command }}" >> $GITHUB_ENV
-          echo "CLI_TEST_E2E=yarn ${{ inputs.test_e2e_command }}" >> $GITHUB_ENV
-          echo "CLI_TEST_COMPONENT=yarn ${{ inputs.test_component_command }}" >> $GITHUB_ENV
 
       - name: Create environment variables for npm commands
         if: inputs.package_manager == 'npm'
