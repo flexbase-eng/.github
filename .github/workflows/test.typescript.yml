@@ -115,7 +115,11 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: exit 1
 
-      - run: ${{ env.CLI_TEST_E2E }}
+      - uses: cypress-io/github-action@v5
+        with:
+          browser: chrome
+
+      #- run: ${{ env.CLI_TEST_E2E }}
 
   # artifacts:
   #   needs: [unit, component, e2e]
