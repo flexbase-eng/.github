@@ -63,6 +63,10 @@ jobs:
 
   compile:
     runs-on: ubuntu-latest
+    env:
+      CLI_INSTALL:
+      CLI_BUILD:
+      CLI_LINT:
     steps:
       - name: Create environment variables for yarn commands
         if: inputs.package_manager == 'yarn'
@@ -70,7 +74,7 @@ jobs:
           echo "CLI_INSTALL=yarn install --frozen-lockfile" >> $GITHUB_ENV
           echo "CLI_BUILD=yarn ${{ inputs.build_command }}" >> $GITHUB_ENV
           echo "CLI_LINT=yarn ${{ inputs.lint_command }}" >> $GITHUB_ENV
-          echo "CLI_TEST=yarn ${{ inputs.test_command }}" >> $GITHUB_ENV
+          echo "CLI_TEST_UNIT=yarn ${{ inputs.test_unit_command }}" >> $GITHUB_ENV
           echo "CLI_PACKR=yarn ${{ inputs.packr_command }}" >> $GITHUB_ENV
           echo "CLI_VERSION=yarn ${{ inputs.version_command }}" >> $GITHUB_ENV
 
@@ -80,7 +84,7 @@ jobs:
           echo "CLI_INSTALL=npm ci" >> $GITHUB_ENV
           echo "CLI_BUILD=npm run ${{ inputs.build_command }}" >> $GITHUB_ENV
           echo "CLI_LINT=npm run ${{ inputs.lint_command }}" >> $GITHUB_ENV
-          echo "CLI_TEST=npm run ${{ inputs.test_command }}" >> $GITHUB_ENV
+          echo "CLI_TEST_UNIT=npm run ${{ inputs.test_unit_command }}" >> $GITHUB_ENV
           echo "CLI_PACKR=npm run ${{ inputs.packr_command }}" >> $GITHUB_ENV
           echo "CLI_VERSION=npm run ${{ inputs.version_command }}" >> $GITHUB_ENV
 
@@ -110,11 +114,17 @@ jobs:
       - name: Compile
         run: ${{ env.CLI_BUILD }}
 
-      - name: Run tests
-        run: ${{ env.CLI_TEST }}
-
       - name: Lint
         run: ${{ env.CLI_LINT }}
+
+      - name: Upload build cache
+        uses: actions/cache@v3
+        with:
+          path: .
+          key: build-cache-${{ github.sha }}
+
+      - name: Run unit tests
+        run: ${{ env.CLI_TEST_UNIT }}
 
       - name: Update semantic version
         env:
@@ -125,7 +135,7 @@ jobs:
         if: ${{ inputs.packr_command != '' }}
         run: ${{ env.CLI_PACKR }}
 
-      - name: Upload Build Artifacts
+      - name: Upload build artifacts
         if: ${{ inputs.build_artifact_folder != ''}}
         uses: actions/upload-artifact@v3
         with:
@@ -134,7 +144,7 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-      - name: Upload Coverage Artifacts
+      - name: Upload unit test coverage artifacts
         if: ${{ inputs.coverage_artifact_folder != ''}}
         uses: actions/upload-artifact@v3
         with:
