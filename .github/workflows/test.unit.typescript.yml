@@ -1,0 +1,55 @@
+name: Unit tests
+on:
+  workflow_call:
+    inputs:
+      package_manager:
+        required: false
+        type: string
+        default: 'yarn'
+      test_command:
+        required: false
+        type: string
+        default: 'test:ci'
+      coverage_artifact_folder:
+        required: false
+        type: string
+        default: 'coverage/lcov.info'
+      coverage_artifact_name:
+        required: false
+        type: string
+        default: 'code-coverage-report'
+
+env:
+  CLI_TEST: yarn ${{ inputs.test_command }}
+
+jobs:
+  initialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create environment variables for npm commands
+        if: inputs.package_manager == 'npm'
+        run: echo "CLI_TEST=npm run ${{ inputs.test_command }}" >> $GITHUB_ENV
+
+  unit:
+    name: Unit tests
+    needs: initialize
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieve build cache
+        id: cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ./*
+          key: build-cache-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - name: Run tests
+        run: ${{ env.CLI_TEST }}
+
+      - name: Upload coverage artifacts
+        if: ${{ inputs.coverage_artifact_folder != ''}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.coverage_artifact_name }}
+          path: ${{ inputs.coverage_artifact_folder }}
+          retention-days: 1

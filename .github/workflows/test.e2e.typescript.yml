@@ -1,0 +1,61 @@
+name: End to end tests
+on:
+  workflow_call:
+    inputs:
+      package_manager:
+        required: false
+        type: string
+        default: 'yarn'
+      test_command:
+        required: false
+        type: string
+        default: 'test:e2e:ci'
+      coverage_artifact_folder:
+        required: false
+        type: string
+        default: 'coverage/lcov.info'
+      coverage_artifact_name:
+        required: false
+        type: string
+        default: 'code-coverage-report'
+
+env:
+  CLI_TEST: yarn ${{ inputs.test_command }}
+  CURRENTS_PROJECT_ID: ${{ secrets.CYPRESS_CLOUD_PROJECT_ID }}
+  CURRENTS_PROJECT_KEY: ${{ secrets.CYPRESS_CLOUD_KEY }}
+  CURRENTS_BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+jobs:
+  initialize:
+    runs-on: ubuntu-latest
+    outputs:
+      CYPRESS_BIN_PATH: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH }}
+    steps:
+      - name: Create environment variables for npm commands
+        if: inputs.package_manager == 'npm'
+        run: echo "CLI_TEST=npm run ${{ inputs.test_command }}" >> $GITHUB_ENV
+
+      - name: Get cypress cache directory path
+        id: cypress-cache-dir
+        run: echo "CYPRESS_BIN_PATH=$(npx cypress cache path)" >> $GITHUB_OUTPUT
+
+  test:
+    needs: initialize
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieve build cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ./*
+          key: build-cache-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - name: Retrieve cypress binary cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ needs.initialize.outputs.CYPRESS_BIN_PATH }}
+          key: cypress-${{ runner.os }}
+          fail-on-cache-miss: true
+
+      - name: Run tests
+        run: ${{ env.CLI_TEST }} --ci-build-id ${{ env.CURRENTS_BUILD_ID }}
