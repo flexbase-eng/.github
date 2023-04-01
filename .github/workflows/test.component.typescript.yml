@@ -22,7 +22,7 @@ on:
 env:
   CLI_TEST: yarn ${{ inputs.test_command }}
   CURRENTS_PROJECT_ID: ${{ secrets.CYPRESS_CLOUD_PROJECT_ID }}
-  CURRENTS_PROJECT_KEY: ${{ secrets.CYPRESS_CLOUD_KEY }}
+  CURRENTS_RECORD_KEY: ${{ secrets.CYPRESS_CLOUD_KEY }}
   CURRENTS_BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
 
 jobs:
