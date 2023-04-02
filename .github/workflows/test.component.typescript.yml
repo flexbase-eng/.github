@@ -18,6 +18,9 @@ on:
         required: false
         type: string
         default: 'code-coverage-report'
+      cypress_bin_path:
+        required: true
+        type: string
 
 env:
   CLI_TEST: yarn ${{ inputs.test_command }}
@@ -26,23 +29,13 @@ env:
   CURRENTS_BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
 
 jobs:
-  initialize:
+  test:
     runs-on: ubuntu-latest
-    outputs:
-      CYPRESS_BIN_PATH: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH }}
     steps:
       - name: Create environment variables for npm commands
         if: inputs.package_manager == 'npm'
         run: echo "CLI_TEST=npm run ${{ inputs.test_command }}" >> $GITHUB_ENV
 
-      - name: Get cypress cache directory path
-        id: cypress-cache-dir
-        run: echo "CYPRESS_BIN_PATH=$(npx cypress cache path)" >> $GITHUB_OUTPUT
-
-  test:
-    needs: initialize
-    runs-on: ubuntu-latest
-    steps:
       - name: Retrieve build cache
         uses: actions/cache/restore@v3
         with:
@@ -53,7 +46,7 @@ jobs:
       - name: Retrieve cypress binary cache
         uses: actions/cache/restore@v3
         with:
-          path: ${{ needs.initialize.outputs.CYPRESS_BIN_PATH }}
+          path: ${{ inputs.cypress_bin_path }}
           key: cypress-${{ runner.os }}
           fail-on-cache-miss: true
 
