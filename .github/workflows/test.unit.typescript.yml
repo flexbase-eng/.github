@@ -23,18 +23,14 @@ env:
   CLI_TEST: yarn ${{ inputs.test_command }}
 
 jobs:
-  initialize:
+  unit:
+    name: Unit tests
     runs-on: ubuntu-latest
     steps:
       - name: Create environment variables for npm commands
         if: inputs.package_manager == 'npm'
         run: echo "CLI_TEST=npm run ${{ inputs.test_command }}" >> $GITHUB_ENV
 
-  unit:
-    name: Unit tests
-    needs: initialize
-    runs-on: ubuntu-latest
-    steps:
       - name: Retrieve build cache
         id: cache
         uses: actions/cache/restore@v3
