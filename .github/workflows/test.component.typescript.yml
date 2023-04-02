@@ -21,7 +21,7 @@ on:
       cypress_bin_path:
         required: false
         type: string
-        default: '.cache/Cypress'
+        default: '~/.cache/Cypress'
 
 env:
   CLI_TEST: yarn ${{ inputs.test_command }}

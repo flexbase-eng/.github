@@ -67,8 +67,9 @@ jobs:
       CLI_INSTALL:
       CLI_BUILD:
       CLI_LINT:
+      CYPRESS_BIN_PATH: '~/.cache/Cypress'
     outputs:
-      cypress_bin_path: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH }}
+      cypress_bin_path: ${{ env.CYPRESS_BIN_PATH }}
     steps:
       - name: Create environment variables for yarn commands
         if: inputs.package_manager == 'yarn'
@@ -121,7 +122,7 @@ jobs:
 
       - name: Get cypress cache directory path
         id: cypress-cache-dir
-        run: echo "CYPRESS_BIN_PATH=$(npx cypress cache path)" >> $GITHUB_OUTPUT
+        run: echo "CYPRESS_BIN_PATH=$(npx cypress cache path)" >> $GITHUB_ENV
 
       - name: Upload build cache
         uses: actions/cache@v3
@@ -131,9 +132,9 @@ jobs:
 
       - name: Upload cypress binary cache
         uses: actions/cache@v3
-        if: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH == '.cache/Cypress'}}
+        if: ${{ env.CYPRESS_BIN_PATH != ''}}
         with:
-          path: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH }}
+          path: ${{ env.CYPRESS_BIN_PATH }}
           key: cypress-${{ runner.os }}
           restore-keys: cypress-${{ runner.os }}
 
