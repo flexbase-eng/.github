@@ -19,8 +19,9 @@ on:
         type: string
         default: 'code-coverage-report'
       cypress_bin_path:
-        required: true
+        required: false
         type: string
+        default: '.cache/Cypress'
 
 env:
   CLI_TEST: yarn ${{ inputs.test_command }}

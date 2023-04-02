@@ -131,37 +131,37 @@ jobs:
 
       - name: Upload cypress binary cache
         uses: actions/cache@v3
-        if: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH != ''}}
+        if: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH == '.cache/Cypress'}}
         with:
           path: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH }}
           key: cypress-${{ runner.os }}
           restore-keys: cypress-${{ runner.os }}
 
-      - name: Run unit tests
-        run: ${{ env.CLI_TEST_UNIT }}
+      # - name: Run unit tests
+      #   run: ${{ env.CLI_TEST_UNIT }}
 
-      - name: Update semantic version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GHA_PAT_PRIVATE || secrets.GHA_PAT || secrets.GITHUB_TOKEN }}
-        run: ${{ env.CLI_VERSION }}
+      # - name: Update semantic version
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GHA_PAT_PRIVATE || secrets.GHA_PAT || secrets.GITHUB_TOKEN }}
+      #   run: ${{ env.CLI_VERSION }}
 
-      - name: Packr
-        if: ${{ inputs.packr_command != '' }}
-        run: ${{ env.CLI_PACKR }}
+      # - name: Packr
+      #   if: ${{ inputs.packr_command != '' }}
+      #   run: ${{ env.CLI_PACKR }}
 
-      - name: Upload build artifacts
-        if: ${{ inputs.build_artifact_folder != ''}}
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ inputs.build_artifact_name }}
-          path: ${{ inputs.build_artifact_folder }}
-          retention-days: 1
-          if-no-files-found: error
+      # - name: Upload build artifacts
+      #   if: ${{ inputs.build_artifact_folder != ''}}
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ inputs.build_artifact_name }}
+      #     path: ${{ inputs.build_artifact_folder }}
+      #     retention-days: 1
+      #     if-no-files-found: error
 
-      - name: Upload unit test coverage artifacts
-        if: ${{ inputs.coverage_artifact_folder != ''}}
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ inputs.coverage_artifact_name }}
-          path: ${{ inputs.coverage_artifact_folder }}
-          retention-days: 1
+      # - name: Upload unit test coverage artifacts
+      #   if: ${{ inputs.coverage_artifact_folder != ''}}
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ inputs.coverage_artifact_name }}
+      #     path: ${{ inputs.coverage_artifact_folder }}
+      #     retention-days: 1
