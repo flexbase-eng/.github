@@ -46,7 +46,10 @@ on:
         required: false
         type: string
         default: 'code-coverage-report'
-
+      cypress_bin_path:
+        required: false
+        type: string
+        default: '~/.cache/Cypress'
 jobs:
   labeler:
     runs-on: ubuntu-latest
@@ -67,9 +70,6 @@ jobs:
       CLI_INSTALL:
       CLI_BUILD:
       CLI_LINT:
-      CYPRESS_BIN_PATH: '~/.cache/Cypress'
-    outputs:
-      cypress_bin_path: ${{ env.CYPRESS_BIN_PATH }}
     steps:
       - name: Create environment variables for yarn commands
         if: inputs.package_manager == 'yarn'
@@ -128,8 +128,9 @@ jobs:
 
       - name: Upload cypress binary cache
         uses: actions/cache@v3
+        if: ${{ inputs.cypress_bin_path != '' }}
         with:
-          path: ${{ env.CYPRESS_BIN_PATH }}
+          path: ${{ inputs.cypress_bin_path }}
           key: cypress-${{ runner.os }}
           restore-keys: cypress-${{ runner.os }}
 
