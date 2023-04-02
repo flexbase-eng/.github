@@ -68,7 +68,7 @@ jobs:
       CLI_BUILD:
       CLI_LINT:
     outputs:
-      cypress_bin_path: ${{ steps.cypress-cache-dir.outputs.GITHUB_OUTPUT }}
+      cypress_bin_path: ${{ steps.cypress-cache-dir.outputs.CYPRESS_BIN_PATH }}
     steps:
       - name: Create environment variables for yarn commands
         if: inputs.package_manager == 'yarn'
