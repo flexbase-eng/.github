@@ -53,3 +53,4 @@ jobs:
 
       - name: Run tests
         run: ${{ env.CLI_TEST }} --ci-build-id ${{ env.CURRENTS_BUILD_ID }}
+        timeout-minutes: 5

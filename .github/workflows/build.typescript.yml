@@ -2,14 +2,14 @@ name: Build
 on:
   workflow_call:
     inputs:
-      build_artifact_folder:
-        required: false
-        type: string
-        default: 'dist'
-      build_artifact_name:
-        required: false
-        type: string
-        default: 'dist'
+      # build_artifact_folder:
+      #   required: false
+      #   type: string
+      #   default: 'dist'
+      # build_artifact_name:
+      #   required: false
+      #   type: string
+      #   default: 'dist'
       package_manager:
         required: false
         type: string
@@ -22,30 +22,30 @@ on:
         required: false
         type: string
         default: 'lint'
-      test_command:
-        required: false
-        type: string
-        default: 'test'
-      version_command:
-        required: false
-        type: string
-        default: 'semantic-release'
+      # test_command:
+      #   required: false
+      #   type: string
+      #   default: 'test'
+      # version_command:
+      #   required: false
+      #   type: string
+      #   default: 'semantic-release'
       node_version:
         required: false
         type: string
         default: 'latest'
-      packr_command:
-        required: false
-        type: string
-        default: ''
-      coverage_artifact_folder:
-        required: false
-        type: string
-        default: 'coverage/lcov.info'
-      coverage_artifact_name:
-        required: false
-        type: string
-        default: 'code-coverage-report'
+      # packr_command:
+      #   required: false
+      #   type: string
+      #   default: ''
+      # coverage_artifact_folder:
+      #   required: false
+      #   type: string
+      #   default: 'coverage/lcov.info'
+      # coverage_artifact_name:
+      #   required: false
+      #   type: string
+      #   default: 'code-coverage-report'
       cypress_bin_path:
         required: false
         type: string
@@ -77,9 +77,6 @@ jobs:
           echo "CLI_INSTALL=yarn install --frozen-lockfile" >> $GITHUB_ENV
           echo "CLI_BUILD=yarn ${{ inputs.build_command }}" >> $GITHUB_ENV
           echo "CLI_LINT=yarn ${{ inputs.lint_command }}" >> $GITHUB_ENV
-          echo "CLI_TEST_UNIT=yarn ${{ inputs.test_unit_command }}" >> $GITHUB_ENV
-          echo "CLI_PACKR=yarn ${{ inputs.packr_command }}" >> $GITHUB_ENV
-          echo "CLI_VERSION=yarn ${{ inputs.version_command }}" >> $GITHUB_ENV
 
       - name: Create environment variables for npm commands
         if: inputs.package_manager == 'npm'
@@ -87,9 +84,6 @@ jobs:
           echo "CLI_INSTALL=npm ci" >> $GITHUB_ENV
           echo "CLI_BUILD=npm run ${{ inputs.build_command }}" >> $GITHUB_ENV
           echo "CLI_LINT=npm run ${{ inputs.lint_command }}" >> $GITHUB_ENV
-          echo "CLI_TEST_UNIT=npm run ${{ inputs.test_unit_command }}" >> $GITHUB_ENV
-          echo "CLI_PACKR=npm run ${{ inputs.packr_command }}" >> $GITHUB_ENV
-          echo "CLI_VERSION=npm run ${{ inputs.version_command }}" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v3

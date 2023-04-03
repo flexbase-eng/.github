@@ -1,0 +1,57 @@
+name: Netlify Deploy
+on:
+  workflow_call:
+    inputs:
+      build_artifact_download:
+        required: false
+        type: string
+        default: dist
+      build_artifact_download_path:
+        required: false
+        type: string
+        default: dist
+      is_prod:
+        required: false
+        type: boolean
+        default: false
+env:
+  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      deployUrl: ${{ steps.netlify_deploy.outputs.deploy_url }}
+      prodUrl: ${{ fromJson(steps.netlify_deploy.outputs.netlify_output).url }}
+    steps:
+      - name: Is production deployment
+        if: inputs.is_prod == true
+        run: echo "NETLIFY_PROD=--prod" >> $GITHUB_ENV
+
+      - name: Retrieve build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.build_artifact_download }}
+          path: ${{ inputs.build_artifact_download_path }}
+
+      - name: Deploy to Netlify
+        id: netlify_deploy
+        uses: flexbase-eng/actions/netlify-cli@main
+        with:
+          args: deploy --dir=${{ inputs.build_artifact_download_path }} ${{ env.NETLIFY_PROD }}
+        timeout-minutes: 2
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: edumserrano/find-create-or-update-comment@v1
+        env:
+          DEPLOY_URL: ${{ steps.netlify_deploy.outputs.deploy_url }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: ':cloud: Deployed to'
+          comment-author: 'github-actions[Netlify]'
+          body: ':cloud: Deployed to ${{ env.DEPLOY_URL }}'
+          edit-mode: replace

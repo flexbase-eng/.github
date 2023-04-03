@@ -22,6 +22,9 @@ on:
         required: false
         type: string
         default: '~/.cache/Cypress'
+      base_url:
+        required: true
+        type: string
 
 env:
   CLI_TEST: yarn ${{ inputs.test_command }}
@@ -52,4 +55,5 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Run tests
-        run: ${{ env.CLI_TEST }} --ci-build-id ${{ env.CURRENTS_BUILD_ID }}
+        run: ${{ env.CLI_TEST }} --ci-build-id ${{ env.CURRENTS_BUILD_ID }} --config baseUrl=${{ inputs.base_url }}
+        timeout-minutes: 5

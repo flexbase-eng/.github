@@ -1,0 +1,73 @@
+name: Build
+on:
+  workflow_call:
+    inputs:
+      build_artifact_folder:
+        required: false
+        type: string
+        default: 'dist'
+      build_artifact_name:
+        required: false
+        type: string
+        default: 'dist'
+      package_manager:
+        required: false
+        type: string
+        default: 'yarn'
+      version_command:
+        required: false
+        type: string
+        default: 'semantic-release'
+      packr_command:
+        required: false
+        type: string
+        default: ''
+      version_token:
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    env:
+      CLI_VERSION:
+      CLI_PACKR:
+    steps:
+      - name: Create environment variables for yarn commands
+        if: inputs.package_manager == 'yarn'
+        run: |
+          echo "CLI_VERSION=yarn ${{ inputs.version_command }}" >> $GITHUB_ENV
+          echo "CLI_PACKR=yarn ${{ inputs.packr_command }}" >> $GITHUB_ENV
+
+      - name: Create environment variables for npm commands
+        if: inputs.package_manager == 'npm'
+        run: |
+          echo "CLI_VERSION=npm run ${{ inputs.version_command }}" >> $GITHUB_ENV
+          echo "CLI_PACKR=npm run ${{ inputs.packr_command }}" >> $GITHUB_ENV
+
+      - name: Retrieve build cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ./*
+          key: build-cache-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - name: Update semantic version
+        if: ${{ inputs.version_command != '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.version_token || secrets.GITHUB_TOKEN }}
+        run: ${{ env.CLI_VERSION }}
+
+      - name: Packr
+        if: ${{ inputs.packr_command != '' }}
+        run: ${{ env.CLI_PACKR }}
+
+      - name: Upload build artifacts
+        if: ${{ inputs.build_artifact_folder != ''}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.build_artifact_name }}
+          path: ${{ inputs.build_artifact_folder }}
+          retention-days: 1
+          if-no-files-found: error
