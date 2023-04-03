@@ -4,20 +4,16 @@ name: Slack Notification
 on:
   workflow_call:
     inputs:
-      production_url:
-        required: true
-        type: string
       release_title:
         required: false
         type: string
-        default: ${{ github.event.repository.name }}
+        default: ''
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-  PRODUCTION_URL: ${{ inputs.production_url }}
-  RELEASE_TITLE: ${{ inputs.release_title }}
+  RELEASE_TITLE: ${{ inputs.release_title || github.event.repository.name }}
 
 permissions:
   contents: read
@@ -27,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get commits
-        uses: octokit/request-action@v2.x
+        uses: octokit/request-action@v2
         id: get_commit_list
         with:
           route: GET /repos/{owner}/{repo}/commits?sha=${{ github.sha }}

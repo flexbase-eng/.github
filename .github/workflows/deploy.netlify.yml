@@ -18,13 +18,14 @@ env:
   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  NETLIFY_PROD:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     outputs:
-      deployUrl: ${{ steps.netlify_deploy.outputs.deploy_url }}
-      prodUrl: ${{ fromJson(steps.netlify_deploy.outputs.netlify_output).url }}
+      deploy-url: ${{ steps.netlify_deploy.outputs.deploy_url }}
+      prod-url: ${{ fromJson(steps.netlify_deploy.outputs.netlify_output).url }}
     steps:
       - name: Is production deployment
         if: inputs.is_prod == true
