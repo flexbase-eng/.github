@@ -51,7 +51,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
-          body-includes: ':cloud: Deployed to'
-          comment-author: 'github-actions[Netlify]'
-          body: ':cloud: Deployed to ${{ env.DEPLOY_URL }}'
+          body-includes: 'Deployed to'
+          comment-author: 'github-actions[bot]'
+          body: 'Deployed to ${{ env.DEPLOY_URL }}'
           edit-mode: replace
