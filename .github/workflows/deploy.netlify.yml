@@ -22,10 +22,11 @@ env:
 
 jobs:
   deploy:
+    name: Netlify Deploy
     runs-on: ubuntu-latest
     outputs:
-      deploy-url: ${{ steps.netlify_deploy.outputs.deploy_url }}
-      prod-url: ${{ fromJson(steps.netlify_deploy.outputs.netlify_output).url }}
+      deploy_url: ${{ steps.netlify_deploy.outputs.deploy_url }}
+      prod_url: ${{ steps.netlify_deploy.outputs.prod_url }}
     steps:
       - name: Is production deployment
         if: inputs.is_prod == true

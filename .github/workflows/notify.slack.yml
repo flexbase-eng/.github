@@ -19,11 +19,11 @@ permissions:
   contents: read
 
 jobs:
-  prod-notify:
+  slack-notify:
     runs-on: ubuntu-latest
     steps:
       - name: Get commits
-        uses: octokit/request-action@v2
+        uses: octokit/request-action@v2.x
         id: get_commit_list
         with:
           route: GET /repos/{owner}/{repo}/commits?sha=${{ github.sha }}
