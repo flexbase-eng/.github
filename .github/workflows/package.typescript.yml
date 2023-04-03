@@ -56,7 +56,7 @@ jobs:
       - name: Update semantic version
         if: ${{ inputs.version_command != '' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.version_token || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ inputs.version_token || secrets.GITHUB_TOKEN }}
         run: ${{ env.CLI_VERSION }}
 
       - name: Packr
