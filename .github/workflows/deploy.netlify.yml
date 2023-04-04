@@ -49,9 +49,9 @@ jobs:
       - name: Get output
         id: netlify_output
         run: |
-          echo NETLIFY_OUTPUT=${{ steps.netlify_deploy.outputs.netlify_output }} >> $GITHUB_OUTPUT
-          echo DEPLOY_URL=${{ steps.netlify_deploy.outputs.deploy_url }} >> $GITHUB_OUTPUT
-          echo PROD_URL=${{ steps.netlify_deploy.outputs.deploy_url }} >> $PROD_URL
+          echo "NETLIFY_OUTPUT=${{ steps.netlify_deploy.outputs.netlify_output }}" >> $GITHUB_OUTPUT
+          echo "DEPLOY_URL=${{ steps.netlify_deploy.outputs.deploy_url }}" >> $GITHUB_OUTPUT
+          echo "PROD_URL=${{ steps.netlify_deploy.outputs.deploy_url }}" >> $PROD_URL
 
       - name: Comment on PR
         if: github.event_name == 'pull_request'
