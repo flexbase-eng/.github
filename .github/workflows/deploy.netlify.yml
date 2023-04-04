@@ -25,9 +25,9 @@ jobs:
     name: Netlify Deploy
     runs-on: ubuntu-latest
     outputs:
-      netlify_output: ${{ steps.netlify_deploy.outputs.netlify_output }}
-      deploy_url: ${{ steps.netlify_deploy.outputs.deploy_url }}
-      prod_url: ${{ steps.netlify_deploy.outputs.prod_url }}
+      netlify_output: ${{ steps.netlify_output.outputs.NETLIFY_OUTPUT }}
+      deploy_url: ${{ steps.netlify_output.outputs.DEPLOY_URL }}
+      prod_url: ${{ steps.netlify_output.outputs.PROD_URL }}
     steps:
       - name: Is production deployment
         if: inputs.is_prod == true
@@ -47,16 +47,11 @@ jobs:
         timeout-minutes: 2
 
       - name: Get output
-        env:
-          NETLIFY_OUTPUT: ${{ steps.netlify_deploy.outputs.netlify_output }}
-          DEPLOY_URL: ${{ steps.netlify_deploy.outputs.deploy_url }}
-          PROD_URL: ${{ steps.netlify_deploy.outputs.prod_url }}
+        id: netlify_output
         run: |
-          echo $NETLIFY_OUTPUT
-          echo $DEPLOY_URL
-          echo $PROD_URL
-          echo ${{ steps.netlify_deploy.outputs.netlify_output }}
-          echo ${{ steps.netlify_deploy.outputs.deploy_url }}
+          echo NETLIFY_OUTPUT=${{ steps.netlify_deploy.outputs.netlify_output }} >> $GITHUB_OUTPUT
+          echo DEPLOY_URL=${{ steps.netlify_deploy.outputs.deploy_url }} >> $GITHUB_OUTPUT
+          echo PROD_URL=${{ steps.netlify_deploy.outputs.deploy_url }} >> $PROD_URL
 
       - name: Comment on PR
         if: github.event_name == 'pull_request'
