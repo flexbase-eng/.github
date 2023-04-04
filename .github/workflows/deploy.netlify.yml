@@ -25,9 +25,9 @@ jobs:
     name: Netlify Deploy
     runs-on: ubuntu-latest
     outputs:
-      netlify_output: ${{ steps.netlify_output.outputs.NETLIFY_OUTPUT }}
-      deploy_url: ${{ steps.netlify_output.outputs.DEPLOY_URL }}
-      prod_url: ${{ steps.netlify_output.outputs.PROD_URL }}
+      netlify_output: ${{ env.NETLIFY_OUTPUT }}
+      deploy_url: ${{ env.DEPLOY_URL }}
+      prod_url: ${{ env.PROD_URL }}
     steps:
       - name: Is production deployment
         if: inputs.is_prod == true
@@ -49,9 +49,9 @@ jobs:
       - name: Get output
         id: netlify_output
         run: |
-          echo "NETLIFY_OUTPUT=${{ steps.netlify_deploy.outputs.netlify_output }}" >> $GITHUB_OUTPUT
-          echo "DEPLOY_URL=${{ steps.netlify_deploy.outputs.deploy_url }}" >> $GITHUB_OUTPUT
-          echo "PROD_URL=${{ steps.netlify_deploy.outputs.deploy_url }}" >> $PROD_URL
+          echo "NETLIFY_OUTPUT=${{ steps.netlify_deploy.outputs.netlify_output }}" >> $GITHUB_ENV
+          echo "DEPLOY_URL=${{ steps.netlify_deploy.outputs.deploy_url }}" >> $GITHUB_ENV
+          echo "PROD_URL=${{ steps.netlify_deploy.outputs.deploy_url }}" >> $GITHUB_ENV
 
       - name: Comment on PR
         if: github.event_name == 'pull_request'
