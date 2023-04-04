@@ -52,7 +52,7 @@ jobs:
           echo "CLI_INSTALL=yarn install --frozen-lockfile" >> $GITHUB_ENV
           echo "CLI_BUILD=yarn ${{ inputs.build_command }}" >> $GITHUB_ENV
           echo "CLI_LINT=yarn ${{ inputs.lint_command }}" >> $GITHUB_ENV
-          echo "LOCK_FILE=**/yarn.lock" >> $GITHUB_ENV
+          echo "LOCK_FILE=yarn.lock" >> $GITHUB_ENV
 
       - name: Create environment variables for npm commands
         if: inputs.package_manager == 'npm'
@@ -60,7 +60,7 @@ jobs:
           echo "CLI_INSTALL=npm ci" >> $GITHUB_ENV
           echo "CLI_BUILD=npm run ${{ inputs.build_command }}" >> $GITHUB_ENV
           echo "CLI_LINT=npm run ${{ inputs.lint_command }}" >> $GITHUB_ENV
-          echo "LOCK_FILE=**/package-lock.json" >> $GITHUB_ENV
+          echo "LOCK_FILE=package-lock.json" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -86,9 +86,8 @@ jobs:
         id: dependencies-cache
         uses: actions/cache/restore@v3
         with:
-          path: node_modules
+          path: ./node_modules
           key: node-modules-${{ runner.os }}-${{ hashFiles(env.LOCK_FILE) }}
-          restore-keys: node-modules-${{ runner.os }}-${{ hashFiles(env.LOCK_FILE) }}
 
       - name: Install dependencies
         if: steps.dependencies-cache.outputs.cache-hit != 'true'
@@ -97,7 +96,7 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
-          path: node_modules
+          path: ./node_modules
           key: node-modules-${{ runner.os }}-${{ hashFiles(env.LOCK_FILE) }}
           restore-keys: node-modules-${{ runner.os }}-${{ hashFiles(env.LOCK_FILE) }}
 
