@@ -19,18 +19,15 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
   NETLIFY_PROD:
-  NETLIFY_OUTPUT:
-  NETLIFY_DEPLOY_URL:
-  NETLIFY_PROD_URL:
 
 jobs:
   deploy:
     name: Netlify Deploy
     runs-on: ubuntu-latest
     outputs:
-      netlify_output: ${{ env.NETLIFY_OUTPUT }}
-      deploy_url: ${{ env.NETLIFY_DEPLOY_URL }}
-      prod_url: ${{ env.NETLIFY_PROD_URL }}
+      netlify_output: ${{ steps.netlify_deploy.outputs.netlify_output }}
+      netlify_deploy_url: ${{ steps.netlify_deploy.outputs.netlify_deploy_url }}
+      netlify_prod_url: ${{ steps.netlify_deploy.outputs.netlify_prod_url }}
     steps:
       - name: Is production deployment
         if: inputs.is_prod == true
@@ -52,15 +49,15 @@ jobs:
       - name: Get output
         id: netlify_output
         run: |
-          echo "NETLIFY_OUTPUT=${{ steps.netlify_deploy.outputs.netlify_output }}" >> $GITHUB_ENV
-          echo "NETLIFY_DEPLOY_URL=${{ steps.netlify_deploy.outputs.deploy_url }}" >> $GITHUB_ENV
-          echo "NETLIFY_PROD_URL=${{ steps.netlify_deploy.outputs.deploy_url }}" >> $GITHUB_ENV
+          echo "netlify_output=${{ steps.netlify_deploy.outputs.netlify_output }}" >> $GITHUB_OUTPUT
+          echo "netlify_deploy_url=${{ steps.netlify_deploy.outputs.netlify_deploy_url }}" >> $GITHUB_OUTPUT
+          echo "netlify_prod_url=${{ steps.netlify_deploy.outputs.netlify_prod_url }}" >> $GITHUB_OUTPUT
 
       - name: Comment on PR
         if: github.event_name == 'pull_request'
         uses: edumserrano/find-create-or-update-comment@v1
         env:
-          DEPLOY_URL: ${{ steps.netlify_deploy.outputs.deploy_url }}
+          DEPLOY_URL: ${{ steps.netlify_deploy.outputs.netlify_deploy_url }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
