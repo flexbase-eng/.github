@@ -25,6 +25,7 @@ jobs:
     name: Netlify Deploy
     runs-on: ubuntu-latest
     outputs:
+      netlify_output: ${{ steps.netlify_deploy.outputs.netlify_output }}
       deploy_url: ${{ steps.netlify_deploy.outputs.deploy_url }}
       prod_url: ${{ steps.netlify_deploy.outputs.prod_url }}
     steps:
