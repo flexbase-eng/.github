@@ -46,6 +46,18 @@ jobs:
           args: deploy --dir=${{ inputs.build_artifact_download_path }} ${{ env.NETLIFY_PROD }}
         timeout-minutes: 2
 
+      - name: Get output
+        env:
+          NETLIFY_OUTPUT: ${{ steps.netlify_deploy.outputs.netlify_output }}
+          DEPLOY_URL: ${{ steps.netlify_deploy.outputs.deploy_url }}
+          PROD_URL: ${{ steps.netlify_deploy.outputs.prod_url }}
+        run: |
+          echo $NETLIFY_OUTPUT
+          echo $DEPLOY_URL
+          echo $PROD_URL
+          echo ${{ steps.netlify_deploy.outputs.netlify_output }}
+          echo ${{ steps.netlify_deploy.outputs.deploy_url }}
+
       - name: Comment on PR
         if: github.event_name == 'pull_request'
         uses: edumserrano/find-create-or-update-comment@v1
