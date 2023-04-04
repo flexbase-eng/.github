@@ -84,27 +84,31 @@ jobs:
 
       - name: Retrieve dependencies cache
         id: dependencies-cache
+        env:
+          FILE_HASH: ${{ hashFiles(env.LOCK_FILE) }}
+          YARN_HASH: ${{ hashFiles('yarn.lock') }}
         uses: actions/cache/restore@v3
         with:
           path: ./node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles(env.LOCK_FILE) }}
+          key: node-modules-${{ runner.os }}-${{ env.FILE_HASH }}
 
       - name: Install dependencies
         if: steps.dependencies-cache.outputs.cache-hit != 'true'
         run: ${{ env.CLI_INSTALL }}
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles(env.LOCK_FILE) }}
-          restore-keys: node-modules-${{ runner.os }}-${{ hashFiles(env.LOCK_FILE) }}
 
       - name: Compile
         run: ${{ env.CLI_BUILD }}
 
       - name: Lint
         run: ${{ env.CLI_LINT }}
+
+      - name: Update dependencies cache
+        uses: actions/cache@v3
+        env:
+          FILE_HASH: ${{ hashFiles(env.LOCK_FILE) }}
+        with:
+          path: ./node_modules
+          key: node-modules-${{ runner.os }}-${{ env.FILE_HASH }}
 
       - name: Upload build cache
         uses: actions/cache@v3
