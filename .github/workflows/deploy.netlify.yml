@@ -14,6 +14,9 @@ on:
         required: false
         type: boolean
         default: false
+      environment:
+        required: false
+        type: string
     outputs:
       netlify_output:
         description: Netlify json output
@@ -34,6 +37,7 @@ jobs:
   deploy:
     name: Netlify Deploy
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     outputs:
       netlify_output: ${{ steps.netlify_deploy.outputs.netlify_output }}
       netlify_deploy_url: ${{ steps.netlify_deploy.outputs.netlify_deploy_url }}
