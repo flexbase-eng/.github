@@ -86,7 +86,6 @@ jobs:
         id: dependencies-cache
         env:
           FILE_HASH: ${{ hashFiles(env.LOCK_FILE) }}
-          YARN_HASH: ${{ hashFiles('yarn.lock') }}
         uses: actions/cache/restore@v3
         with:
           path: ./node_modules
