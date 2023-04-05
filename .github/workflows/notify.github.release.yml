@@ -1,0 +1,19 @@
+name: Github Release Draft
+# this should be used explicitly for push and pull_request -> opened, reopened, synchronized
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  release_draft:
+    permissions:
+      contents: write # for release-drafter/release-drafter to create a github release
+      pull-requests: write # for release-drafter/release-drafter to add label to PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
