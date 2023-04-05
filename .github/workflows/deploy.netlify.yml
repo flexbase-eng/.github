@@ -14,6 +14,16 @@ on:
         required: false
         type: boolean
         default: false
+    outputs:
+      netlify_output:
+        description: Netlify json output
+        value: ${{ jobs.deploy.outputs.netlify_output}}
+      netlify_deploy_url:
+        description: Netlify deploy url
+        value: ${{ jobs.deploy.outputs.netlify_deploy_url }}
+      netlify_prod_url:
+        description: Netlify production url
+        value: ${{ jobs.deploy.outputs.netlify_prod_url }}
 env:
   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,13 +55,6 @@ jobs:
         with:
           args: deploy --dir=${{ inputs.build_artifact_download_path }} ${{ env.NETLIFY_PROD }}
         timeout-minutes: 2
-
-      - name: Get output
-        id: netlify_output
-        run: |
-          echo "netlify_output=${{ steps.netlify_deploy.outputs.netlify_output }}" >> $GITHUB_OUTPUT
-          echo "netlify_deploy_url=${{ steps.netlify_deploy.outputs.netlify_deploy_url }}" >> $GITHUB_OUTPUT
-          echo "netlify_prod_url=${{ steps.netlify_deploy.outputs.netlify_prod_url }}" >> $GITHUB_OUTPUT
 
       - name: Comment on PR
         if: github.event_name == 'pull_request'
