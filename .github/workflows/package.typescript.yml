@@ -22,6 +22,14 @@ on:
         required: false
         type: string
         default: ''
+      runtime_env:
+        required: false
+        type: string
+        default: ''
+      runtime_env_file:
+        required: true
+        type: string
+        default: './public/env.js'
     secrets:
       version_token:
         required: false
@@ -57,6 +65,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.version_token || secrets.GITHUB_TOKEN }}
         run: ${{ env.CLI_VERSION }}
+
+      - name: Create runtime env
+        if: inputs.runtime_env != ''
+        run: echo "${{ inputs.runtime_env }}" >> ${{ inputs.runtime_env_file }}
 
       - name: Packr
         if: ${{ inputs.packr_command != '' }}
