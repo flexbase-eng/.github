@@ -30,6 +30,10 @@ on:
         required: true
         type: string
         default: './public/env.js'
+      environment:
+        required: false
+        type: string
+        default: dev
     secrets:
       version_token:
         required: false
@@ -57,7 +61,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./*
-          key: build-cache-${{ github.sha }}
+          key: build-cache-${{ github.sha }}-${{ inputs.environment }}
           fail-on-cache-miss: true
 
       - name: Update semantic version
