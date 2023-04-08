@@ -27,7 +27,7 @@ on:
         type: string
         default: ''
       runtime_env_file:
-        required: true
+        required: false
         type: string
         default: './public/env.js'
     secrets:
