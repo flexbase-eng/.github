@@ -22,18 +22,22 @@ on:
         required: false
         type: string
         default: ''
-      runtime_env:
+      env_file_name:
+        required: false
+        type: string
+        default: '.env'
+      env_file_path:
+        required: false
+        type: string
+        default: 'dist'
+      env_file_data:
         required: false
         type: string
         default: ''
-      runtime_env_file:
+      env_file_format:
         required: false
         type: string
-        default: './public/env.js'
-      environment:
-        required: false
-        type: string
-        default: dev
+        default: 'dotenv'
     secrets:
       version_token:
         required: false
@@ -61,7 +65,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./*
-          key: build-cache-${{ github.sha }}-${{ inputs.environment }}
+          key: build-cache-${{ github.sha }}
           fail-on-cache-miss: true
 
       - name: Update semantic version
@@ -71,8 +75,13 @@ jobs:
         run: ${{ env.CLI_VERSION }}
 
       - name: Create runtime env
-        if: inputs.runtime_env != ''
-        run: echo "${{ inputs.runtime_env }}" >> ${{ inputs.runtime_env_file }}
+        if: inputs.env_file_data != ''
+        uses: flexbase-eng/actions/create-env@main
+        with:
+          file_name: ${{ inputs.env_file_name }}
+          file_path: ${{ inputs.env_file_path }}
+          file_data: ${{ inputs.env_file_data }}
+          file_format: ${{ inputs.env_file_format }}
 
       - name: Packr
         if: ${{ inputs.packr_command != '' }}

@@ -22,10 +22,7 @@ on:
         required: false
         type: string
         default: '~/.cache/Cypress'
-      environment:
-        required: false
-        type: string
-        default: 'dev'
+
 env:
   CLI_TEST: yarn ${{ inputs.test_command }}
   CURRENTS_PROJECT_ID: ${{ secrets.CYPRESS_CLOUD_PROJECT_ID }}
@@ -44,7 +41,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./*
-          key: build-cache-${{ github.sha }}=${{ inputs.environment }}
+          key: build-cache-${{ github.sha }}
           fail-on-cache-miss: true
 
       - name: Retrieve cypress binary cache
