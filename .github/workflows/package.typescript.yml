@@ -68,6 +68,13 @@ jobs:
           key: build-cache-${{ github.sha }}
           fail-on-cache-miss: true
 
+      - name: Checkout
+        if: ${{ inputs.version_command != '' }}
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
       - name: Update semantic version
         if: ${{ inputs.version_command != '' }}
         env:
