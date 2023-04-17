@@ -61,13 +61,6 @@ jobs:
           echo "CLI_VERSION=npm run ${{ inputs.version_command }}" >> $GITHUB_ENV
           echo "CLI_PACKR=npm run ${{ inputs.packr_command }}" >> $GITHUB_ENV
 
-      - name: Checkout
-        if: ${{ inputs.version_command != '' }}
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
       - name: Retrieve build cache
         uses: actions/cache/restore@v3
         with:
