@@ -36,7 +36,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: edumserrano/find-create-or-update-comment@v1
         env:
-          DEPLOY_URL: ${{ steps.chromatic_deploy.outputs.url }}
+          DEPLOY_URL: ${{ steps.chromatic_deploy.outputs.storybookUrl }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
