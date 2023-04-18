@@ -2,27 +2,16 @@ name: Chromatic build and deploy
 on:
   workflow_call:
     inputs:
-      package_manager:
-        required: false
-        type: string
-        default: 'yarn'      
       chromatic_command:
         required: false
         type: string
         default: 'build:storybook'
-
-env:
-  CLI_CHROMATIC: yarn ${{ inputs.chromatic_command }}    
 
 jobs:
   deploy:
     name: Chromatic build and deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Create environment variables for npm commands
-        if: inputs.package_manager == 'npm'
-        run: echo "CLI_CHROMATIC=npm run ${{ inputs.chromatic_command }}" >> $GITHUB_ENV
-
       - name: Retrieve build cache
         id: cache
         uses: actions/cache/restore@v3
@@ -38,7 +27,7 @@ jobs:
           CI: true
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          buildScriptName: ${{ env.CLI_CHROMATIC }}
+          buildScriptName: ${{ inputs.chromatic_command }}
           skip: ${{ github.event.pull_request.draft == true }}
           exitOnceUploaded: true
           onlyChanged: true
