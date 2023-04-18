@@ -32,10 +32,10 @@ on:
         default: 'https://registry.npmjs.org'
         description: The package registry to use. Defaults to 'https://registry.npmjs.org'
     secrets:
-      AUTH_TOKEN:
-        required: false
+      NODE_AUTH_TOKEN:
+        required: true
 env:
-  NODE_AUTH_TOKEN: ${{ secrets.AUTH_TOKEN || secrets.NODE_AUTH_TOKEN }}
+  NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
 jobs:
   deploy:
