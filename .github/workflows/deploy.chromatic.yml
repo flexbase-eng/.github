@@ -1,0 +1,58 @@
+name: Chromatic build and deploy
+on:
+  workflow_call:
+    inputs:
+      package_manager:
+        required: false
+        type: string
+        default: 'yarn'      
+      chromatic_command:
+        required: false
+        type: string
+        default: 'build:storybook'
+
+env:
+  CLI_CHROMATIC: yarn ${{ inputs.chromatic_command }}    
+
+jobs:
+  deploy:
+    name: Chromatic build and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create environment variables for npm commands
+        if: inputs.package_manager == 'npm'
+        run: echo "CLI_CHROMATIC=npm run ${{ inputs.chromatic_command }}" >> $GITHUB_ENV
+
+      - name: Retrieve build cache
+        id: cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ./*
+          key: build-cache-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - name: Run chromatic
+        id: chromatic_deploy
+        uses: chromaui/action@v1
+        env:
+          CI: true
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          buildScriptName: ${{ env.CLI_CHROMATIC }}
+          skip: ${{ github.event.pull_request.draft == true }}
+          exitOnceUploaded: true
+          onlyChanged: true
+        timeout-minutes: 2
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: edumserrano/find-create-or-update-comment@v1
+        env:
+          DEPLOY_URL: ${{ steps.chromatic_deploy.outputs.buildUrl }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: 'Storybook deployed to'
+          comment-author: 'github-actions[bot]'
+          body: 'Storybook deployed to ${{ env.DEPLOY_URL }}'
+          edit-mode: replace
