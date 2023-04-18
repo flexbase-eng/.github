@@ -66,12 +66,8 @@ jobs:
     
       - name: Initialize github package registry settings
         if: inputs.registry-url == 'https://npm.pkg.github.com'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
         run: echo "@flexbase:registry=https://npm.pkg.github.com" >> .npmrc
           
-      - run: cat .npmrc
-
         # reference: https://stackoverflow.com/questions/54310050/how-to-version-build-artifacts-using-github-actions
       - name: beta - version value from package.json
         if: inputs.tag == 'beta'
