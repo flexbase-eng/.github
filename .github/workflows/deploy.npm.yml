@@ -64,14 +64,14 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: ${{ inputs.package_manager }}
     
-      - name: Initialize github package registry settings
-        if: inputs.registry-url == 'https://npm.pkg.github.com'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-        run: echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
+      # - name: Initialize github package registry settings
+      #   if: inputs.registry-url == 'https://npm.pkg.github.com'
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      #   run: echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
 
       - run: cat .npmrc
-      
+
         # reference: https://stackoverflow.com/questions/54310050/how-to-version-build-artifacts-using-github-actions
       - name: beta - version value from package.json
         if: inputs.tag == 'beta'
@@ -80,4 +80,6 @@ jobs:
           json -I -f package.json -e "this.version=\"$(json -f package.json | json version)-beta.${{ github.run_number }}\""
 
       - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}      
         run: ${{ env.CLI_PUBLISH }}
