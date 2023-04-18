@@ -67,12 +67,16 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: ${{ inputs.package_manager }}
 
-        # reference: https://stackoverflow.com/questions/54310050/how-to-version-build-artifacts-using-github-actions
-      - name: beta - version value from package.json
-        if: inputs.tag == 'beta'
+      - name: Initialize non-npmjs package registry settings
+        if: inputs.registry-url != 'https://registry.npmjs.org'
         run: |
           npm i -g json
           json -I -f package.json -e "this.version=\"$(json -f package.json | json version)-beta.${{ github.run_number }}\""
+
+        # reference: https://stackoverflow.com/questions/54310050/how-to-version-build-artifacts-using-github-actions
+      - name: beta - version value from package.json
+        if: inputs.tag == 'beta'
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.NODE_AUTH_TOKEN }}" > ~/.npmrc
 
       - name: Install dependencies
         run: ${{ env.CLI_INSTALL }}
