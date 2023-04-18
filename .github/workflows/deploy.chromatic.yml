@@ -30,14 +30,13 @@ jobs:
           buildScriptName: ${{ inputs.chromatic_command }}
           skip: ${{ github.event.pull_request.draft == true }}
           exitOnceUploaded: true
-          onlyChanged: true
         timeout-minutes: 2
 
       - name: Comment on PR
         if: github.event_name == 'pull_request'
         uses: edumserrano/find-create-or-update-comment@v1
         env:
-          DEPLOY_URL: ${{ steps.chromatic_deploy.outputs.buildUrl }}
+          DEPLOY_URL: ${{ steps.chromatic_deploy.outputs.url }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
