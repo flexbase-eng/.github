@@ -54,7 +54,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.build_artifact_name }}
-          path: ${{ inputs.build_artifact_folder }}
 
       - name: Setup Node ${{ inputs.node_version }} with cache
         uses: actions/setup-node@v3
