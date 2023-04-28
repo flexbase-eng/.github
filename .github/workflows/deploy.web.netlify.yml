@@ -2,11 +2,11 @@ name: Netlify Deploy
 on:
   workflow_call:
     inputs:
-      build_artifact_name:
+      build_artifact_download:
         required: false
         type: string
         default: dist
-      build_artifact_folder:
+      build_artifact_download_path:
         required: false
         type: string
         default: dist
@@ -31,16 +31,16 @@ jobs:
         run: echo "NETLIFY_PROD=--prod" >> $GITHUB_ENV
 
       - name: Retrieve build artifacts
-        uses: actions/name-artifact@v3
+        uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.build_artifact_name }}
-          path: ${{ inputs.build_artifact_folder }}
+          name: ${{ inputs.build_artifact_download }}
+          path: ${{ inputs.build_artifact_download_path }}
 
       - name: Deploy to Netlify
         id: netlify_deploy
         uses: flexbase-eng/actions/netlify-cli@main
         with:
-          args: deploy --dir=${{ inputs.build_artifact_folder }} ${{ env.NETLIFY_PROD }}
+          args: deploy --dir=${{ inputs.build_artifact_download_path }} ${{ env.NETLIFY_PROD }}
         timeout-minutes: 2
 
       - name: Comment on PR
