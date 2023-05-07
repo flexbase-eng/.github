@@ -10,6 +10,9 @@ on:
         required: false
         type: string
         default: 'test:ci'
+      node_version:
+        required: false
+        type: string
       coverage_artifact_folder:
         required: false
         type: string
@@ -38,6 +41,13 @@ jobs:
           path: ./*
           key: build-cache-${{ github.sha }}
           fail-on-cache-miss: true
+
+      - name: Setup Node ${{ inputs.node_version }}
+        if: ${{ inputs.node_version != ''}}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
 
       - name: Run tests
         run: ${{ env.CLI_TEST }}
