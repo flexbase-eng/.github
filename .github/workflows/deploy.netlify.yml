@@ -32,6 +32,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
   NETLIFY_PROD:
+  NETLIFY_ALIAS:
 
 jobs:
   deploy:
@@ -52,11 +53,21 @@ jobs:
           name: ${{ inputs.build_artifact_name }}
           path: ${{ inputs.build_artifact_folder }}
 
+      - name: Look up netlify alias
+        uses: peter-evans/find-comment@v2
+        id: lookup
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: 'Deployed to'
+          comment-author: 'github-actions[bot]'
+
+      - run: echo ${{steps.lookup.outputs.comment-body}} | sed -n 's/.*https:\/\/\(.*\)--.*/NETLIFY_ALIAS=\1/p' >> $GITHUB_ENV
+
       - name: Deploy to Netlify
         id: netlify_deploy
         uses: flexbase-eng/actions/netlify-cli@main
         with:
-          args: deploy --dir=${{ inputs.build_artifact_folder }} ${{ env.NETLIFY_PROD }}
+          args: deploy --dir=${{ inputs.build_artifact_folder }} ${{ env.NETLIFY_PROD }} --alias ${{ env.NETLIFY_ALIAS}}
         timeout-minutes: 2
 
       - name: Comment on PR
