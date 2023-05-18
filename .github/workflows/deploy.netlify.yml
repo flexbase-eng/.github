@@ -63,11 +63,14 @@ jobs:
 
       - run: echo ${{steps.lookup.outputs.comment-body}} | sed -n 's/.*https:\/\/\(.*\)--.*/NETLIFY_ALIAS=\1/p' >> $GITHUB_ENV
 
+      - if: env.NETLIFY_ALIAS != ''
+        run: echo --alias ${{ env.NETLIFY_ALIAS }} >> $GITHUB_ENV
+
       - name: Deploy to Netlify
         id: netlify_deploy
         uses: flexbase-eng/actions/netlify-cli@main
         with:
-          args: deploy --dir=${{ inputs.build_artifact_folder }} ${{ env.NETLIFY_PROD }} --alias ${{ env.NETLIFY_ALIAS}}
+          args: deploy --dir=${{ inputs.build_artifact_folder }} ${{ env.NETLIFY_PROD }} ${{ env.NETLIFY_ALIAS}}
         timeout-minutes: 2
 
       - name: Comment on PR
