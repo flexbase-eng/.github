@@ -54,6 +54,7 @@ jobs:
           path: ${{ inputs.build_artifact_folder }}
 
       - name: Look up netlify alias
+        if: github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v2
         id: lookup
         with:
