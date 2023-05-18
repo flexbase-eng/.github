@@ -61,10 +61,8 @@ jobs:
           body-includes: 'Deployed to'
           comment-author: 'github-actions[bot]'
 
-      - run: echo ${{steps.lookup.outputs.comment-body}} | sed -n 's/.*https:\/\/\(.*\)--.*/NETLIFY_ALIAS=\1/p' >> $GITHUB_ENV
-
-      - if: env.NETLIFY_ALIAS != ''
-        run: echo --alias ${{ env.NETLIFY_ALIAS }} >> $GITHUB_ENV
+      - if: steps.lookup.outputs.comment-body != ''
+        run: echo ${{steps.lookup.outputs.comment-body}} | sed -n 's/.*https:\/\/\(.*\)--.*/NETLIFY_ALIAS=--alias \1/p' >> $GITHUB_ENV
 
       - name: Deploy to Netlify
         id: netlify_deploy
