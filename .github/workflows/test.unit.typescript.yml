@@ -39,9 +39,9 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      if: inputs.use_postgres
+      if: ${{ inputs.use_postgres == true }}
       postgres:
-        image: postgres:15
+        image: postgres
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -75,7 +75,7 @@ jobs:
           cache: ${{ inputs.package_manager }}
 
       - name: Install go-migrate
-        if: inputs.use_go_migrate
+        if: ${{ inputs.use_go_migrate == true }}
         run: |
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate.linux-amd64 /usr/bin/migrate
