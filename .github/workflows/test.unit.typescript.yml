@@ -21,6 +21,14 @@ on:
         required: false
         type: string
         default: 'code-coverage-report'
+      use_postgres:
+        required: false
+        type: boolean
+        default: false
+      use_go_migrate:
+        required: false
+        type: boolean
+        default: false
 
 env:
   CLI_TEST: yarn ${{ inputs.test_command }}
@@ -29,6 +37,23 @@ jobs:
   unit:
     name: Unit tests
     runs-on: ubuntu-latest
+
+    services:
+      if: inputs.use_postgres
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: platform
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Create environment variables for npm commands
         if: inputs.package_manager == 'npm'
@@ -48,6 +73,13 @@ jobs:
         with:
           node-version: ${{ inputs.node_version }}
           cache: ${{ inputs.package_manager }}
+
+      - name: Install go-migrate
+        if: inputs.use_go_migrate
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate.linux-amd64 /usr/bin/migrate
+          which migrate
 
       - name: Run tests
         run: ${{ env.CLI_TEST }}
