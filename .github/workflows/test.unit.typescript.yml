@@ -21,10 +21,6 @@ on:
         required: false
         type: string
         default: 'code-coverage-report'
-      use_postgres:
-        required: false
-        type: boolean
-        default: false
       use_go_migrate:
         required: false
         type: boolean
@@ -39,7 +35,6 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      if: ${{ inputs.use_postgres == true }}
       postgres:
         image: postgres
         env:
