@@ -26,6 +26,10 @@ on:
         required: false
         type: string
         default: './tests/'
+      exclusions:
+        required: false
+        type: string
+        default: '**/generated/**'
 
 env:
   SONAR_ORG: flexbase
@@ -59,3 +63,4 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=${{ inputs.js_report_path }}
             -Dsonar.sources=${{inputs.src_path}}
             -Dsonar.tests=${{inputs.test_path}}
+            -Dsonar.exclusions=${{inputs.exclusions}}
