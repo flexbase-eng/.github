@@ -40,7 +40,7 @@ jobs:
 
   compile:
     name: Compile source
-    runs-on: high-memory
+    runs-on: ubuntu-latest
     env:
       CLI_INSTALL:
       CLI_BUILD:
