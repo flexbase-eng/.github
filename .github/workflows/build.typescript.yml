@@ -5,23 +5,23 @@ on:
       package_manager:
         required: false
         type: string
-        default: 'yarn'
+        default: "yarn"
       build_command:
         required: false
         type: string
-        default: 'build'
+        default: "build"
       lint_command:
         required: false
         type: string
-        default: 'lint'
+        default: "lint"
       node_version:
         required: false
         type: string
-        default: 'latest'
+        default: "latest"
       cypress_bin_path:
         required: false
         type: string
-        default: '~/.cache/Cypress'
+        default: "~/.cache/Cypress"
 
 jobs:
   labeler:
@@ -40,7 +40,7 @@ jobs:
 
   compile:
     name: Compile source
-    runs-on: ubuntu-latest
+    runs-on: high-memory
     env:
       CLI_INSTALL:
       CLI_BUILD:
