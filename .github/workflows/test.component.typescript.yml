@@ -41,7 +41,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./*
-          key: build-cache-${{ github.sha }}
+          key: build-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           fail-on-cache-miss: true
 
       - name: Retrieve cypress binary cache
