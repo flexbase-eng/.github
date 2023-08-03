@@ -41,8 +41,9 @@ jobs:
   compile:
     name: Compile source
     runs-on:
-      labels: ubuntu-latest
+      labels: high-memory
     env:
+      NODE_OPTIONS: "--max_old_space_size=8192"
       CLI_INSTALL:
       CLI_BUILD:
       CLI_LINT:
