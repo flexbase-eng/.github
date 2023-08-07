@@ -2,6 +2,9 @@ name: Netlify Deploy
 on:
   workflow_call:
     inputs:
+      netlify_site_id:
+        required: false
+        type: string
       build_artifact_name:
         required: false
         type: string
@@ -30,7 +33,7 @@ on:
 env:
   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  NETLIFY_SITE_ID: ${{ inputs.netlify_site_id || secrets.NETLIFY_SITE_ID }}
   NETLIFY_PROD:
   NETLIFY_ALIAS:
 
