@@ -5,26 +5,30 @@ on:
       package_manager:
         required: false
         type: string
-        default: 'yarn'
+        default: "yarn"
       test_command:
         required: false
         type: string
-        default: 'test:e2e:ci'
+        default: "test:e2e:ci"
       coverage_artifact_folder:
         required: false
         type: string
-        default: 'coverage/lcov.info'
+        default: "coverage/lcov.info"
       coverage_artifact_name:
         required: false
         type: string
-        default: 'code-coverage-report'
+        default: "code-coverage-report"
       cypress_bin_path:
         required: false
         type: string
-        default: '~/.cache/Cypress'
+        default: "~/.cache/Cypress"
       base_url:
         required: true
         type: string
+      build_cache_key:
+        required: false
+        type: string
+        default: build-cache-${{ github.sha }}
 
 env:
   CLI_TEST: yarn ${{ inputs.test_command }}
@@ -45,7 +49,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./*
-          key: build-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ inputs.build_cache_key }}
           fail-on-cache-miss: true
 
       - name: Retrieve cypress binary cache
@@ -64,4 +68,4 @@ jobs:
         with:
           name: cypress-screenshots
           path: cypress/screenshots
-          retention-days: 1        
+          retention-days: 1
