@@ -58,3 +58,10 @@ jobs:
       - name: Run tests
         run: ${{ env.CLI_TEST }} --ci-build-id ${{ env.CURRENTS_BUILD_ID }} --config baseUrl=${{ env.BASE_URL }}
         timeout-minutes: 5
+
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          retention-days: 1        
