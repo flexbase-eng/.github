@@ -5,43 +5,47 @@ on:
       build_artifact_folder:
         required: false
         type: string
-        default: 'dist'
+        default: "dist"
       build_artifact_name:
         required: false
         type: string
-        default: 'dist'
+        default: "dist"
       package_manager:
         required: false
         type: string
-        default: 'yarn'
+        default: "yarn"
       version_command:
         required: false
         type: string
-        default: 'semantic-release'
+        default: "semantic-release"
       packr_command:
         required: false
         type: string
-        default: ''
+        default: ""
       env_file_name:
         required: false
         type: string
-        default: '.env'
+        default: ".env"
       env_file_path:
         required: false
         type: string
-        default: 'dist'
+        default: "dist"
       env_file_data:
         required: false
         type: string
-        default: ''
+        default: ""
       env_file_data_format:
         required: false
         type: string
-        default: 'dotenv'
+        default: "dotenv"
       env_file_format:
         required: false
         type: string
-        default: 'dotenv'
+        default: "dotenv"
+      build_cache_key:
+        required: false
+        type: string
+        default: build-cache-${{ github.sha }}
     secrets:
       version_token:
         required: false
@@ -69,7 +73,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./*
-          key: build-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ inputs.build_cache_key }}
           fail-on-cache-miss: true
 
       - name: Update semantic version

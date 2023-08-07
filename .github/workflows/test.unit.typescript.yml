@@ -5,26 +5,30 @@ on:
       package_manager:
         required: false
         type: string
-        default: 'yarn'
+        default: "yarn"
       test_command:
         required: false
         type: string
-        default: 'test:ci'
+        default: "test:ci"
       node_version:
         required: false
         type: string
       coverage_artifact_folder:
         required: false
         type: string
-        default: 'coverage/lcov.info'
+        default: "coverage/lcov.info"
       coverage_artifact_name:
         required: false
         type: string
-        default: 'code-coverage-report'
+        default: "code-coverage-report"
       use_go_migrate:
         required: false
         type: boolean
         default: false
+      build_cache_key:
+        required: false
+        type: string
+        default: build-cache-${{ github.sha }}
 
 env:
   CLI_TEST: yarn ${{ inputs.test_command }}
@@ -59,7 +63,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./*
-          key: build-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ inputs.build_cache_key }}
           fail-on-cache-miss: true
 
       - name: Setup Node ${{ inputs.node_version }}
