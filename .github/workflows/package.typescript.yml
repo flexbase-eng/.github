@@ -46,6 +46,10 @@ on:
         required: false
         type: string
         default: build-cache-${{ github.sha }}
+      node_version:
+        required: false
+        type: string
+        default: "latest"        
     secrets:
       version_token:
         required: false
@@ -75,6 +79,12 @@ jobs:
           path: ./*
           key: ${{ inputs.build_cache_key }}
           fail-on-cache-miss: true
+
+      - name: Setup Node ${{ inputs.node_version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
 
       - name: Update semantic version
         if: ${{ inputs.version_command != '' }}
