@@ -52,14 +52,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      gcp:
-        image: google/cloud-sdk:439.0.0
-        ports:
-            - 8085:8085
-        expose:
-            - 8085
-        command: >
-            bash -c "gcloud beta emulators pubsub start --host-port=0.0.0.0:8085"
 
     steps:
       - name: Create environment variables for npm commands
@@ -88,7 +80,19 @@ jobs:
           sudo mv migrate /usr/bin/
           which migrate
 
+      - name: 'Install Cloud SDK'
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: '>= 439.0.0'
+          install_components: 'beta,pubsub-emulator'
+
+      - name: 'Start Pub/Sub emulator'
+        run: |
+          gcloud beta emulators pubsub start --host-port=0.0.0.0:8085 &
+
       - name: Run tests
+        env:
+          PUBSUB_EMULATOR_HOST: 'localhost:8085'
         run: ${{ env.CLI_TEST }}
 
       - name: Upload coverage artifacts
