@@ -25,6 +25,10 @@ on:
         required: false
         type: boolean
         default: false
+      use_gcp_emulators:
+        required: false
+        type: boolean
+        default: false
       build_cache_key:
         required: false
         type: string
@@ -81,12 +85,14 @@ jobs:
           which migrate
 
       - name: 'Install Cloud SDK'
+        if: ${{ inputs.use_gcp_emulators == true }}
         uses: google-github-actions/setup-gcloud@v1
         with:
           version: '>= 439.0.0'
           install_components: 'beta,pubsub-emulator'
 
       - name: 'Start Pub/Sub emulator'
+        if: ${{ inputs.use_gcp_emulators == true }}
         run: |
           gcloud beta emulators pubsub start --host-port=0.0.0.0:8085 &
 
