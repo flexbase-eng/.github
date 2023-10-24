@@ -25,11 +25,11 @@ on:
       node_version:
         required: false
         type: string
-        default: 'latest'
+        default: "20"
       registry-url:
         required: false
         type: string
-        default: 'https://registry.npmjs.org'
+        default: "https://registry.npmjs.org"
         description: The package registry to use. Defaults to 'https://registry.npmjs.org'
     secrets:
       NODE_AUTH_TOKEN:
@@ -63,7 +63,7 @@ jobs:
           always-auth: true
           node-version: ${{ inputs.node_version }}
           cache: ${{ inputs.package_manager }}
-             
+
         # reference: https://stackoverflow.com/questions/54310050/how-to-version-build-artifacts-using-github-actions
       - name: beta - version value from package.json
         if: inputs.tag == 'beta'

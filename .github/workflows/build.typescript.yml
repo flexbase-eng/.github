@@ -17,7 +17,7 @@ on:
       node_version:
         required: false
         type: string
-        default: "latest"
+        default: "20"
       cypress_bin_path:
         required: false
         type: string

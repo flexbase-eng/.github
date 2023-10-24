@@ -49,7 +49,7 @@ on:
       node_version:
         required: false
         type: string
-        default: "latest"        
+        default: "20"
     secrets:
       version_token:
         required: false
