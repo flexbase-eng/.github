@@ -56,23 +56,11 @@ jobs:
           name: ${{ inputs.build_artifact_name }}
           path: ${{ inputs.build_artifact_folder }}
 
-      - name: Look up netlify alias
-        if: github.event_name == 'pull_request'
-        uses: peter-evans/find-comment@v2
-        id: lookup
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body-includes: 'Deployed to'
-          comment-author: 'github-actions[bot]'
-
-      - if: steps.lookup.outputs.comment-id == 0
-        run: echo ${{steps.lookup.outputs.comment-body}} | sed -n 's/.*https:\/\/\(.*\)--.*/NETLIFY_ALIAS=--alias \1/p' >> $GITHUB_ENV
-
       - name: Deploy to Netlify
         id: netlify_deploy
         uses: flexbase-eng/actions/netlify-cli@main
         with:
-          args: deploy --dir=${{ inputs.build_artifact_folder }} ${{ env.NETLIFY_PROD }} ${{ env.NETLIFY_ALIAS}}
+          args: deploy --dir=${{ inputs.build_artifact_folder }} ${{ env.NETLIFY_PROD }}
         timeout-minutes: 2
 
       - name: Comment on PR
