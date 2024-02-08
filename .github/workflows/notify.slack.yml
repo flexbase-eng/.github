@@ -8,6 +8,10 @@ on:
         required: false
         type: string
         default: ''
+      is_success:
+        required: false
+        type: boolean
+        default: true
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -23,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get commits
+        if: ${{ inputs.is_success }}
         uses: octokit/request-action@v2.x
         id: get_commit_list
         with:
@@ -31,6 +36,7 @@ jobs:
           repo: ${{ github.event.repository.name }}
 
       - name: Prepare
+        if: ${{ inputs.is_success }}
         id: slack-prepare
         run: |
           COMMIT_MESSAGE="${{ fromJSON(steps.get_commit_list.outputs.data)[0].commit.message }}"
@@ -38,7 +44,8 @@ jobs:
           COMMIT_MESSAGE="$(echo "$COMMIT_MESSAGE" | sed -z 's/\r/\\r/g; s/\n/\\n/g; s/"//g; s/`//g; s/-/\-/g;')"
           echo "commit-message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
 
-      - name: Post to a Slack channel
+      - name: Post to a Success Message to Slack
+        if: ${{ inputs.is_success }}
         id: slack-success
         uses: slackapi/slack-github-action@v1.23.0
         with:
@@ -74,6 +81,50 @@ jobs:
                   "text": {
                     "type": "mrkdwn",
                     "text": "*Commit Details*: ${{ fromJSON(steps.get_commit_list.outputs.data)[0].html_url }}"
+                  }
+                },
+                {
+                  "type": "divider"
+                }
+              ]
+            }
+      - name: Post to a Failure Message to Slack
+        if: ${{ !inputs.is_success }}
+        id: slack-failure-message
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":alert: ${{ env.RELEASE_TITLE }} failed to deploy. :alert:"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Author*: ${{ github.actor }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Triggering Branch*: ${{ github.ref_name }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Link*: ${{ github.server_url }}/ ${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   }
                 },
                 {
