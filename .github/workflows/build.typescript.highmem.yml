@@ -102,7 +102,7 @@ jobs:
         id: dependencies-cache
         env:
           FILE_HASH: ${{ hashFiles(env.LOCK_FILE) }}
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./node_modules
           key: node-modules-${{ runner.os }}-${{ env.FILE_HASH }}

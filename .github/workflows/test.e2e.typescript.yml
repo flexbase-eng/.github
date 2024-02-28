@@ -51,14 +51,14 @@ jobs:
         run: echo "CLI_TEST=npm run ${{ inputs.test_command }}" >> $GITHUB_ENV
 
       - name: Retrieve build cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./*
           key: ${{ inputs.build_cache_key }}
           fail-on-cache-miss: true
 
       - name: Retrieve cypress binary cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ${{ inputs.cypress_bin_path }}
           key: cypress-${{ runner.os }}
@@ -68,7 +68,7 @@ jobs:
         run: ${{ env.CLI_TEST }} --ci-build-id ${{ env.CURRENTS_BUILD_ID }} --config baseUrl=${{ env.BASE_URL }}
         timeout-minutes: 5
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots

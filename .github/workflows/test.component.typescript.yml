@@ -38,14 +38,14 @@ jobs:
         run: echo "CLI_TEST=npm run ${{ inputs.test_command }}" >> $GITHUB_ENV
 
       - name: Retrieve build cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./*
           key: build-cache-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           fail-on-cache-miss: true
 
       - name: Retrieve cypress binary cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ${{ inputs.cypress_bin_path }}
           key: cypress-${{ runner.os }}
