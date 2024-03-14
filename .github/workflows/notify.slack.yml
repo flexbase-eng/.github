@@ -13,9 +13,14 @@ on:
         type: boolean
         default: true
 
+    secrets:
+      failure_slack_webhook_url:
+        required: false
+
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  FAILURE_SLACK_WEBHOOK_URL: ${{ secrets.failure_slack_webhook_url || secrets.SLACK_WEBHOOK_URL }}
   SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
   RELEASE_TITLE: ${{ inputs.release_title || github.event.repository.name }}
 
@@ -47,7 +52,9 @@ jobs:
       - name: Post to a Success Message to Slack
         if: ${{ inputs.is_success }}
         id: slack-success
-        uses: slackapi/slack-github-action@v1.23.0
+        uses: slackapi/slack-github-action@v1.25.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
         with:
           payload: |
             {
@@ -91,7 +98,9 @@ jobs:
       - name: Post to a Failure Message to Slack
         if: ${{ !inputs.is_success }}
         id: slack-failure-message
-        uses: slackapi/slack-github-action@v1.23.0
+        uses: slackapi/slack-github-action@v1.25.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ env.FAILURE_SLACK_WEBHOOK_URL }}
         with:
           payload: |
             {
