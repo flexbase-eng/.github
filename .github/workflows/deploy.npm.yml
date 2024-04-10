@@ -25,11 +25,11 @@ on:
       node_version:
         required: false
         type: string
-        default: "20"
+        default: '20'
       registry-url:
         required: false
         type: string
-        default: "https://registry.npmjs.org"
+        default: 'https://registry.npmjs.org'
         description: The package registry to use. Defaults to 'https://registry.npmjs.org'
     secrets:
       NODE_AUTH_TOKEN:
@@ -51,13 +51,13 @@ jobs:
         run: echo "CLI_PUBLISH=npm publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.tag }}" >> $GITHUB_ENV
 
       - name: Retrieve build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.build_artifact_name }}
           path: ${{ inputs.build_artifact_folder }}
 
       - name: Setup Node ${{ inputs.node_version }} with cache
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           registry-url: ${{ inputs.registry-url }}
           always-auth: true

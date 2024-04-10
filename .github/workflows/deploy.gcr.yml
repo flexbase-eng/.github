@@ -11,7 +11,7 @@ on:
       labels:
         type: string
         required: false
-        description: "labels to add to service such as service=banking"
+        description: 'labels to add to service such as service=banking'
 
 env:
   SERVICE_NAME: ${{ inputs.service_name }}
@@ -25,12 +25,12 @@ jobs:
       id-token: 'write'
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-    # Google Cloud: Configure Workload Identity Federation and generate an access token.
+      # Google Cloud: Configure Workload Identity Federation and generate an access token.
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0'
@@ -49,13 +49,13 @@ jobs:
           gcloud builds submit \
             --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
             --gcs-log-dir gs://artifacts.flexbase-api-development.appspot.com
-      
-      # deploy latest container      
+
+      # deploy latest container
       - id: 'deploy'
         uses: 'google-github-actions/deploy-cloudrun@v0'
         with:
           service: ${{ env.SERVICE_NAME }}
           region: 'us-central1'
-          image: "gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+          image: 'gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}'
       - name: 'Deployment URL'
         run: echo "${{ steps.deploy.outputs.url }}"

@@ -5,23 +5,23 @@ on:
       package_manager:
         required: false
         type: string
-        default: "yarn"
+        default: 'yarn'
       build_command:
         required: false
         type: string
-        default: "build"
+        default: 'build'
       lint_command:
         required: false
         type: string
-        default: "lint"
+        default: 'lint'
       node_version:
         required: false
         type: string
-        default: "20"
+        default: '20'
       cypress_bin_path:
         required: false
         type: string
-        default: "~/.cache/Cypress"
+        default: '~/.cache/Cypress'
       build_cache_key:
         required: false
         type: string
@@ -45,7 +45,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: TimonVS/pr-labeler-action@v4
+      - uses: TimonVS/pr-labeler-action@v5
         with:
           configuration-path: .github/pr-labeler.yml
         env:
@@ -78,13 +78,13 @@ jobs:
           echo "LOCK_FILE=package-lock.json" >> $GITHUB_ENV
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Setup Node ${{ inputs.node_version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
           cache: ${{ inputs.package_manager }}
@@ -101,7 +101,7 @@ jobs:
         id: dependencies-cache
         env:
           FILE_HASH: ${{ hashFiles(env.LOCK_FILE) }}
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./node_modules
           key: node-modules-${{ runner.os }}-${{ env.FILE_HASH }}
@@ -117,7 +117,7 @@ jobs:
         run: ${{ env.CLI_LINT }}
 
       - name: Update dependencies cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           FILE_HASH: ${{ hashFiles(env.LOCK_FILE) }}
         with:
@@ -125,13 +125,13 @@ jobs:
           key: node-modules-${{ runner.os }}-${{ env.FILE_HASH }}
 
       - name: Upload build cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./*
           key: ${{ inputs.build_cache_key }}
 
       - name: Upload cypress binary cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: ${{ inputs.cypress_bin_path != '' }}
         with:
           path: ${{ inputs.cypress_bin_path }}

@@ -5,43 +5,43 @@ on:
       build_artifact_folder:
         required: false
         type: string
-        default: "dist"
+        default: 'dist'
       build_artifact_name:
         required: false
         type: string
-        default: "dist"
+        default: 'dist'
       package_manager:
         required: false
         type: string
-        default: "yarn"
+        default: 'yarn'
       version_command:
         required: false
         type: string
-        default: "semantic-release"
+        default: 'semantic-release'
       packr_command:
         required: false
         type: string
-        default: ""
+        default: ''
       env_file_name:
         required: false
         type: string
-        default: ".env"
+        default: '.env'
       env_file_path:
         required: false
         type: string
-        default: "dist"
+        default: 'dist'
       env_file_data:
         required: false
         type: string
-        default: ""
+        default: ''
       env_file_data_format:
         required: false
         type: string
-        default: "dotenv"
+        default: 'dotenv'
       env_file_format:
         required: false
         type: string
-        default: "dotenv"
+        default: 'dotenv'
       build_cache_key:
         required: false
         type: string
@@ -49,7 +49,7 @@ on:
       node_version:
         required: false
         type: string
-        default: "20"
+        default: '20'
     secrets:
       version_token:
         required: false
@@ -74,14 +74,14 @@ jobs:
           echo "CLI_PACKR=npm run ${{ inputs.packr_command }}" >> $GITHUB_ENV
 
       - name: Retrieve build cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./*
           key: ${{ inputs.build_cache_key }}
           fail-on-cache-miss: true
 
       - name: Setup Node ${{ inputs.node_version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
           cache: ${{ inputs.package_manager }}
@@ -108,7 +108,7 @@ jobs:
 
       - name: Upload build artifacts
         if: ${{ inputs.build_artifact_folder != ''}}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.build_artifact_name }}
           path: ${{ inputs.build_artifact_folder }}
