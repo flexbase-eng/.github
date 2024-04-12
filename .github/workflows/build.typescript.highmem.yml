@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: tibdex/auto-update@v2
+      - uses: flexbase-eng/auto-update@main
         with:
           github_token: ${{ secrets.GHA_PAT }}
 
