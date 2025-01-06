@@ -28,14 +28,14 @@ on:
         default: build-cache-${{ github.sha }}
 
 jobs:
-  merge-main:
-    name: Merge main into PR
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - uses: tibdex/auto-update@v2
-        with:
-          github_token: ${{ secrets.GHA_PAT }}
+  # merge-main:
+  #   name: Merge main into PR
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   steps:
+  #     - uses: tibdex/auto-update@v2
+  #       with:
+  #         github_token: ${{ secrets.GHA_PAT }}
 
   labeler:
     name: Label branch
