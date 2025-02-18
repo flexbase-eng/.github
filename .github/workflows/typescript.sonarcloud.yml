@@ -31,7 +31,7 @@ jobs:
           path: coverage
 
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@latest
+        uses: sonarsource/sonarqube-scan-action@v5
         with:
           args: >
             -Dsonar.organization=${{ env.SONAR_ORG }}
