@@ -30,8 +30,8 @@ jobs:
           name: code-coverage-report
           path: coverage
 
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@latest
         with:
           args: >
             -Dsonar.organization=${{ env.SONAR_ORG }}
